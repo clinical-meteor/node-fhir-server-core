@@ -47,6 +47,12 @@ const CONFIG = {
 				maxAge: 3600
 			}
 		},
+		allergyIntolerance: {
+			service: './src/server/allergyIntolerance/service.mock.js',
+			corsOptions: {
+				maxAge: 3600
+			}
+		},
 		oauth: {
 			service: './src/server/oauth/service.mock.js' // optional if you plan to implement oauth in the same project
 		}
