@@ -1,5 +1,17 @@
 const controller = require('./controllers/observation.controller');
 
+const scopes = [
+  'user/*.*',
+  'user/Observation.*',
+  'user/Observation.read',
+  'user/*.read',
+  'patient/*.*',
+  'patient/Observation.*',
+  'patient/Observation.read',
+  'patient/*.read'
+];
+
+
 let routes = [
   {
     type: 'get',
@@ -24,7 +36,33 @@ let routes = [
 			name: '_format',
 			type: 'string'
 		}],
-    scopes: [],
+    scopes: scopes,
+    controller: controller.getObservations
+	},
+	{
+    type: 'post',
+		path: '/dstu2/observation/_search',
+		corsOptions: {
+			methods: ['POST']
+		},
+    args: [{
+      name: 'patient',
+			type: 'string',
+			required: true
+    }, {
+      name: 'category',
+      type: 'string'
+    }, {
+      name: 'code',
+      type: 'string'
+    }, {
+      name: 'date',
+      type: 'string'
+    }, {
+			name: '_format',
+			type: 'string'
+		}],
+    scopes: scopes,
     controller: controller.getObservations
   },
   {
@@ -38,8 +76,8 @@ let routes = [
       type: 'number',
       required: true
     }],
-    scopes: [],
-    controller: controller.getObservationByID
+    scopes: scopes,
+    controller: controller.getObservationById
   }
 ];
 

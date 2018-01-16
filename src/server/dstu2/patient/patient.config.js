@@ -1,5 +1,16 @@
 const controller = require('./controllers/patient.controller');
 
+const scopes = [
+  'user/*.*',
+  'user/Patient.*',
+  'user/Patient.read',
+  'user/*.read',
+  'patient/*.*',
+  'patient/Patient.*',
+  'patient/Patient.read',
+  'patient/*.read'
+];
+
 let routes = [
 	{
 		type: 'get',
@@ -19,8 +30,36 @@ let routes = [
 		}, {
 			name: 'given',
 			type: 'string'
+		}, {
+			name: 'family',
+			type: 'string'
 		}],
-		scopes: [],
+		scopes: scopes,
+		controller: controller.getPatient
+	},
+	{
+		type: 'post',
+		path: '/dstu2/patient/_search',
+		corsOptions: {
+			methods: ['POST']
+		},
+		args: [{
+			name: 'name',
+			type: 'string'
+		}, {
+			name: 'birthdate',
+			type: 'string'
+		}, {
+			name: 'gender',
+			type: 'string'
+		}, {
+			name: 'given',
+			type: 'string'
+		}, {
+			name: 'family',
+			type: 'string'
+		}],
+		scopes: scopes,
 		controller: controller.getPatient
 	},
 	{
@@ -34,7 +73,7 @@ let routes = [
 			type: 'string',
 			required: true
 		}],
-		scopes: [],
+		scopes: scopes,
 		controller: controller.getPatientById
 	}
 ];

@@ -1,6 +1,7 @@
 const cors = require('cors');
-const { sanitizeMiddleware } = require('../../utils/sanitize.utils');
-const { routes } = require('../observation.config');
+const { sanitizeMiddleware } = require('../../../utils/sanitize.utils');
+const { validate } = require('../../../utils/auth');
+const { routes } = require('../patient.config');
 
 /**
  * @name exports
@@ -8,10 +9,12 @@ const { routes } = require('../observation.config');
  */
 module.exports = (app, config, logger) => {
 	let { profiles, server } = config;
+	let patientProfile = profiles.dstu2 && profiles.dstu2.patient;
+
 	// Only add routes if we have a patient profile
 	// the endpoint can't function without the config
-	if (profiles.observation) {
-		let baseOptions = Object.assign({}, server.corsOptions, profiles.observation.corsOptions);
+	if (patientProfile) {
+		let baseOptions = Object.assign({}, server.corsOptions, patientProfile.corsOptions);
 
 		routes.forEach((route) => {
 			let corsOptions = Object.assign({}, baseOptions, route.corsOptions);
@@ -22,8 +25,10 @@ module.exports = (app, config, logger) => {
 				route.path,
 				cors(corsOptions),
 				sanitizeMiddleware(route.args),
-				route.controller(profiles.observation, logger)
+				validate(route.scopes, logger, config),
+				route.controller(patientProfile, logger, config)
 			);
 		});
 	}
+
 };
