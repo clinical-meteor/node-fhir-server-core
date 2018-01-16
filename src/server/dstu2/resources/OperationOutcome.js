@@ -1,5 +1,5 @@
 const Issue = require('./types/Issue');
-const { DSTU2 } = require('../../constants');
+const { DSTU2 } = require('../../../constants');
 
 /* eslint-disable no-useless-escape */
 let div_content = (severity, diagnostics) =>

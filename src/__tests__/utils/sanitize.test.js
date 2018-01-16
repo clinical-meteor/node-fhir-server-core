@@ -1,8 +1,8 @@
 const moment = require('moment');
 const path = require('path');
 const { sanitizeMiddleware } = require(path.resolve('./src/server/utils/sanitize.utils'));
-const errors = require(path.resolve('./src/server/utils/error.utils'));
-const OperationOutcome = require('../server/resources/OperationOutcome');
+//const errors = require(path.resolve('./src/server/utils/error.utils'));
+const OperationOutcome = require('../../server/dstu2/resources/OperationOutcome');
 
 const ARGS = [
 	{
@@ -139,7 +139,7 @@ describe('Sanitize Utils Tests', () => {
 
 		expect(next).toHaveBeenCalled();
 		expect(nextArg).toBeInstanceOf(OperationOutcome);
-		expect(nextArg.message).toEqual('Invalid parameter');
+		expect(nextArg.message).toEqual('age is invalid.');
 	});
 
 	test('should strip out characters that might cause xss', () => {
@@ -170,7 +170,7 @@ describe('Sanitize Utils Tests', () => {
 
 		expect(next).toHaveBeenCalled();
 		expect(nextArg).toBeInstanceOf(OperationOutcome);
-		expect(nextArg.message).toEqual('Invalid parameter');
+		expect(nextArg.message).toEqual('id is required.');
 	});
 
 	test('should pass an error to next if an argument is not the correct type', () => {
@@ -186,7 +186,7 @@ describe('Sanitize Utils Tests', () => {
 
 		expect(next).toHaveBeenCalled();
 		expect(nextArg).toBeInstanceOf(OperationOutcome);
-		expect(nextArg.message).toEqual('Invalid parameter');
+		expect(nextArg.message).toEqual('age is invalid.');
 	});
 
 	test('should pass an error to next if something other than a string is passed in', () => {
@@ -205,7 +205,7 @@ describe('Sanitize Utils Tests', () => {
 
 		expect(next).toHaveBeenCalled();
 		expect(nextArg).toBeInstanceOf(OperationOutcome);
-		expect(nextArg.message).toEqual('Invalid parameter');
+		expect(nextArg.message).toEqual('age is invalid.');
 	});
 
 });

@@ -1,9 +1,9 @@
-const Observation = require('../../resources/Observation');
+const Observation = require('./Observation');
 const {
 	Patient,
 	Communication,
 	PatientContact
-} = require('../../resources/Patient');
+} = require('./Patient');
 
 /**
  * @name exports

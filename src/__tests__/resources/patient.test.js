@@ -1,15 +1,15 @@
 const path = require('path');
-const { Patient, PatientContact } = require(path.resolve('./src/server/resources/Patient'));
-const Metadata = require(path.resolve('./src/server/resources/types/Metadata'));
-const Narrative = require(path.resolve('./src/server/resources/types/Narrative'));
-const Identifier = require(path.resolve('./src/server/resources/types/Identifier'));
-const Period = require(path.resolve('./src/server/resources/types/Period'));
-const Reference = require(path.resolve('./src/server/resources/types/Reference'));
-const HumanName = require(path.resolve('./src/server/resources/types/HumanName'));
-const ContactPoint = require(path.resolve('./src/server/resources/types/ContactPoint'));
-const Address = require(path.resolve('./src/server/resources/types/Address'));
-const CodeableConcept = require(path.resolve('./src/server/resources/types/CodeableConcept'));
-const Coding = require(path.resolve('./src/server/resources/types/Coding'));
+const { Patient, PatientContact } = require(path.resolve('./src/server/dstu2/resources/Patient'));
+const Metadata = require(path.resolve('./src/server/dstu2/resources/types/Metadata'));
+const Narrative = require(path.resolve('./src/server/dstu2/resources/types/Narrative'));
+const Identifier = require(path.resolve('./src/server/dstu2/resources/types/Identifier'));
+const Period = require(path.resolve('./src/server/dstu2/resources/types/Period'));
+const Reference = require(path.resolve('./src/server/dstu2/resources/types/Reference'));
+const HumanName = require(path.resolve('./src/server/dstu2/resources/types/HumanName'));
+const ContactPoint = require(path.resolve('./src/server/dstu2/resources/types/ContactPoint'));
+const Address = require(path.resolve('./src/server/dstu2/resources/types/Address'));
+const CodeableConcept = require(path.resolve('./src/server/dstu2/resources/types/CodeableConcept'));
+const Coding = require(path.resolve('./src/server/dstu2/resources/types/Coding'));
 
 describe('Patient Resource Tests', () => {
 	test('should create an Patient Object default type', () => {

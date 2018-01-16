@@ -1,13 +1,13 @@
 const path = require('path');
 const Validator = require('jsonschema').Validator;
 const observationSchema = require(path.resolve('./src/server/schemas/observation.schema'));
-const Observation = require(path.resolve('./src/server/resources/Observation'));
-const Metadata = require(path.resolve('./src/server/resources/types/Metadata'));
-const CodeableConcept = require(path.resolve('./src/server/resources/types/CodeableConcept'));
-const Reference = require(path.resolve('./src/server/resources/types/Reference'));
-const Quantity = require(path.resolve('./src/server/resources/types/Quantity'));
-const Component = require(path.resolve('./src/server/resources/types/Component'));
-const Coding = require(path.resolve('./src/server/resources/types/Coding'));
+const Observation = require(path.resolve('./src/server/dstu2/resources/Observation'));
+const Metadata = require(path.resolve('./src/server/dstu2/resources/types/Metadata'));
+const CodeableConcept = require(path.resolve('./src/server/dstu2/resources/types/CodeableConcept'));
+const Reference = require(path.resolve('./src/server/dstu2/resources/types/Reference'));
+const Quantity = require(path.resolve('./src/server/dstu2/resources/types/Quantity'));
+const Component = require(path.resolve('./src/server/dstu2/resources/types/Component'));
+const Coding = require(path.resolve('./src/server/dstu2/resources/types/Coding'));
 
 describe('Observation Resource Tests', () => {
 	test('should create an Observation Object default type', () => {

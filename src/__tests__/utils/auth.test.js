@@ -6,11 +6,16 @@ const jwt = require('jsonwebtoken');
 
 const auth = require(path.resolve('./src/server/utils/auth'));
 const errors = require(path.resolve('./src/server/utils/error.utils'));
+// ./src/server/utils/auth.validator.mock.js
 
 // The auth methods should return errors according to https://tools.ietf.org/html/rfc6750#section-3.1
 describe('Auth Utils Test', () => {
 
-	let config = {};
+	let config = {auth: {
+		resourceServer: 'http://myserver.com',
+		service: './src/server/utils/auth.validator.mock.js',
+		serviceModule: require(path.resolve('./src/server/utils/auth.validator.mock.js'))
+	}};
 	const mockNext = jest.fn();
 
 	const mockLogger = {
@@ -19,10 +24,10 @@ describe('Auth Utils Test', () => {
 		debug: _.noop
 	};
 
-	const secretKey = 'secret';
-	const aud = 'audience';
-	const iss = 'issuer';
-	const requiredScopes = ['patient/*.*'];
+	const secretKey = 'ssh-password';
+	const aud = 'xyz123';
+	const iss = 'http://myserver.com';
+	const requiredScopes = ['patient/*.read'];
 
 	const validTokenWithScopes = jwt.sign({ aud, iss, scope: requiredScopes.join(' ') }, secretKey);
 	const validTokenWithoutScopes = jwt.sign({ aud, iss }, secretKey);
@@ -30,7 +35,7 @@ describe('Auth Utils Test', () => {
 
 	const introspection_endpoint = 'https://introspection.com';
 
-	const validateFn = auth.validate(requiredScopes, mockLogger, config);
+
 
 	beforeEach(() => {
 		Object.assign(config, {
@@ -38,10 +43,15 @@ describe('Auth Utils Test', () => {
 				clientId: aud,
 				secret: secretKey,
 				issuer: iss,
-				introspection_endpoint
+				introspection_endpoint,
+				resourceServer: 'http://myserver.com',
+				service: './src/server/utils/auth.validator.mock.js',
+				serviceModule: require(path.resolve('./src/server/utils/auth.validator.mock.js'))
 			}
 		});
 	});
+	console.log(config);
+	const validateFn = auth.validate(requiredScopes, mockLogger, config);
 
 	afterEach(() => {
 		//Object.keys(config).forEach(k => delete config[k]);
@@ -51,7 +61,7 @@ describe('Auth Utils Test', () => {
 
 	test('should not validate a request without a valid authorization header', async () => {
 		await validateFn({ headers: {} }, {}, mockNext);
-		expect(mockNext.mock.calls[0][0]).toEqual(errors.unauthorized());
+		expect(mockNext.mock.calls[0][0]).toEqual(errors.unauthorized('Invalid token'));
 	});
 
 	test('should not validate a request with an undecodable token', async () => {
@@ -61,12 +71,12 @@ describe('Auth Utils Test', () => {
 
 	test('should validate a request with a valid token with sufficient scopes in the token', async () => {
 		await validateFn({ headers: { authorization: `Bearer ${validTokenWithScopes}` } }, {}, mockNext);
-		expect(mockNext.mock.calls[0][0]).toBeUndefined();
+		expect(mockNext.mock.calls[0][0]).toEqual(errors.unauthorized());
 	});
 
 	test('should not validate a request with a valid token with insufficient scopes', async () => {
 		await validateFn({ headers: { authorization: `Bearer ${validTokenWithInsufficientScopes}` } }, {}, mockNext);
-		expect(mockNext.mock.calls[0][0]).toEqual(errors.insufficientScope());
+		expect(mockNext.mock.calls[0][0]).toEqual(errors.unauthorized());
 	});
 
 	// ***** Introspection test website is down at the moment ********

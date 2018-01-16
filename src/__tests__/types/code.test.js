@@ -1,5 +1,5 @@
 const path = require('path');
-const Code = require(path.resolve('./src/server/resources/types/Code'));
+const Code = require(path.resolve('./src/server/dstu2/resources/types/Code'));
 
 describe('Code Type Tests', () => {
 	test('should create a Code Object by constructor', () => {

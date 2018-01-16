@@ -135,7 +135,7 @@ async function verifyToken(decodedToken, token, client, issuer) {
  * @param {Object} config
  */
 module.exports.validate = (allowedScopes, logger, config) => {
-
+console.log(config);
 	let handler = promise => promise
 		.then(data => [null, data])
 		.catch(err => [err]);

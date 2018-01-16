@@ -1,6 +1,6 @@
 const path = require('path');
 const glob = require('glob');
-const { DSTU2, VERSIONS } = require('../../../../constants');
+const { /*DSTU2, */VERSIONS } = require('../../../../constants');
 const { makeStatement, securityStatement } = require('../capability');
 
 // Glob for discovering all dstu2 conformance statements
