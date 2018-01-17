@@ -2,7 +2,7 @@ const moment = require('moment');
 const path = require('path');
 const { sanitizeMiddleware } = require(path.resolve('./src/server/utils/sanitize.utils'));
 //const errors = require(path.resolve('./src/server/utils/error.utils'));
-const OperationOutcome = require('../../server/dstu2/resources/OperationOutcome');
+const OperationOutcome = require('../../resources/OperationOutcome');
 
 const ARGS = [
 	{
