@@ -1,4 +1,4 @@
-const OperationOutcome = require('../dstu2/resources/OperationOutcome');
+const OperationOutcome = require('../stu3/resources/OperationOutcome');
 const { ISSUE } = require('../../constants');
 
 // /**

@@ -27,6 +27,7 @@ class Issue {
 		// The rest are optional
 		this._details = new CodeableConcept(options.details);
 		this._diagnostics = options.diagnostics;
+		this._expression = options.expression;
 		this._location = options.location;
 	}
 
@@ -62,6 +63,14 @@ class Issue {
 		this._diagnostics = diagnostics;
 	}
 
+	get expression () {
+		return this._expression;
+	}
+
+	set expression (expression) {
+		this._expression = expression;
+	}
+
 	get location () {
 		return this._location;
 	}
@@ -77,6 +86,7 @@ class Issue {
 		};
 
 		if (this._diagnostics) { response.diagnostics = this._diagnostics; }
+		if (this._expression) { response.expression = this._expression; }
 		if (this._location) { response.location = this._location; }
 		if (Object.keys(this._details).length) { response.details = this._details; }
 
