@@ -1,4 +1,5 @@
 const Observation = require('./Observation');
+const OperationOutcome = require('./OperationOutcome');
 const {
 	Patient,
 	Communication,
@@ -13,5 +14,6 @@ module.exports = {
 	Observation,
 	Patient,
 	Communication,
-	PatientContact
+	PatientContact,
+	OperationOutcome
 };

@@ -1,5 +1,6 @@
-const OperationOutcome = require('../stu3/resources/OperationOutcome');
 const { ISSUE } = require('../../constants');
+const { OperationOutcome: dstu2OperationOutcome } = require('../dstu2/resources');
+const { OperationOutcome: stu3OperationOutcome } = require('../stu3/resources');
 
 // /**
 //  * @class ServerError
@@ -19,7 +20,7 @@ const { ISSUE } = require('../../constants');
 
 // Invalid or Missing parameter from request
 let invalidParameter = message =>
-	new OperationOutcome({
+({
 		statusCode: 400,
 		code: ISSUE.CODE.INVALID,
 		severity: ISSUE.SEVERITY.ERROR,
@@ -29,7 +30,7 @@ let invalidParameter = message =>
 
 // Unauthorized request of some resource
 let unauthorized = message =>
-	new OperationOutcome({
+({
 		statusCode: 401,
 		code: ISSUE.CODE.FORBIDDEN,
 		severity: ISSUE.SEVERITY.ERROR,
@@ -38,7 +39,7 @@ let unauthorized = message =>
 	});
 
 let insufficientScope = message =>
-	new OperationOutcome({
+({
 		statusCode: 403,
 		code: ISSUE.CODE.FORBIDDEN,
 		severity: ISSUE.SEVERITY.ERROR,
@@ -47,7 +48,7 @@ let insufficientScope = message =>
 	});
 
 let notFound = message =>
-	new OperationOutcome({
+({
 		statusCode: 404,
 		code: ISSUE.CODE.NOT_FOUND,
 		severity: ISSUE.SEVERITY.ERROR,
@@ -56,7 +57,7 @@ let notFound = message =>
 	});
 
 let deleted = message =>
-	new OperationOutcome({
+({
 		statusCode: 410,
 		code: ISSUE.CODE.NOT_FOUND,
 		severity: ISSUE.SEVERITY.ERROR,
@@ -65,7 +66,7 @@ let deleted = message =>
 	});
 
 let internal = message =>
-	new OperationOutcome({
+({
 		statusCode: 500,
 		code: ISSUE.CODE.EXCEPTION,
 		severity: ISSUE.SEVERITY.ERROR,
@@ -73,7 +74,11 @@ let internal = message =>
 		message: message || 'Internal server error'
 	});
 
-let isServerError = err => err instanceof OperationOutcome;
+let getErrorConstructor = url => {
+	if (url.indexOf('dstu2/') > -1) { return dstu2OperationOutcome; }
+	else if (url.indexOf('stu3/') > -1) { return stu3OperationOutcome; }
+	else { return stu3OperationOutcome; }
+};
 
 /**
  * @name exports
@@ -87,6 +92,6 @@ module.exports = {
 	notFound,
 	deleted,
 	internal,
-	isServerError
+	getErrorConstructor
 	// ServerError
 };

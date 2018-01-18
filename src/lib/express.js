@@ -130,14 +130,16 @@ let setupErrorHandler = function (app, logger) {
 	// Generic catch all error handler
 	// Errors should be thrown with next and passed through
 	app.use((err, req, res, next) => {
+		let ErrorConstructor = errors.getErrorConstructor(req.url);
 		// If there is an error and it is our error type
-		if (err && errors.isServerError(err)) {
-			logger.error(err.statusCode, err.message);
-			res.status(err.statusCode).json(err);
+		if (err && err.statusCode) {
+			let error = new ErrorConstructor(err);
+			logger.error(error.statusCode, error.message);
+			res.status(error.statusCode).json(error);
 		}
 		// If there is still an error, throw a 500 and pass the message through
 		else if (err) {
-			let error = errors.internal();
+			let error = new ErrorConstructor(errors.internal());
 			logger.error(error.statusCode, error.message);
 			res.status(error.statusCode).json(error);
 		}
@@ -149,7 +151,8 @@ let setupErrorHandler = function (app, logger) {
 
 	// Nothing has responded by now, respond with 404
 	app.use((req, res) => {
-		let error = errors.notFound();
+		let ErrorConstructor = errors.getErrorConstructor(req.url);
+		let error = new ErrorConstructor(errors.notFound());
 		logger.error(error.statusCode, error.message);
 		res.status(error.statusCode).json(error);
 	});

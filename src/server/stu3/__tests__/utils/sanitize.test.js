@@ -3,7 +3,6 @@ const path = require('path');
 const { sanitizeMiddleware } = require(path.resolve('./src/server/utils/sanitize.utils'));
 //const errors = require(path.resolve('./src/server/utils/error.utils'));
 //const OperationOutcome = require('../../../dstu2/resources/OperationOutcome');
-const OperationOutcome = require('../../resources/OperationOutcome');
 
 const ARGS = [
 	{
@@ -142,7 +141,6 @@ describe('Sanitize Utils Tests', () => {
 		console.log(typeof nextArg);
 
 		expect(next).toHaveBeenCalled();
-		//expect(nextArg).toBeInstanceOf(OperationOutcome);
 		expect(nextArg.message).toEqual('age is invalid.');
 	});
 
@@ -173,7 +171,6 @@ describe('Sanitize Utils Tests', () => {
 		let nextArg = next.mock.calls[0][0];
 
 		expect(next).toHaveBeenCalled();
-		expect(nextArg).toBeInstanceOf(OperationOutcome);
 		expect(nextArg.message).toEqual('id is required.');
 	});
 
@@ -189,7 +186,6 @@ describe('Sanitize Utils Tests', () => {
 		let nextArg = next.mock.calls[0][0];
 
 		expect(next).toHaveBeenCalled();
-		expect(nextArg).toBeInstanceOf(OperationOutcome);
 		expect(nextArg.message).toEqual('age is invalid.');
 	});
 
@@ -208,7 +204,6 @@ describe('Sanitize Utils Tests', () => {
 		let nextArg = next.mock.calls[0][0];
 
 		expect(next).toHaveBeenCalled();
-		expect(nextArg).toBeInstanceOf(OperationOutcome);
 		expect(nextArg.message).toEqual('age is invalid.');
 	});
 

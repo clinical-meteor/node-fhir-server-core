@@ -2,7 +2,6 @@ const errors = require('../../../utils/error.utils');
 const { VERSIONS } = require('../../../../constants');
 const { Observation } = require('../../resources');
 
-
 module.exports.getObservations = (profile, logger, config) => {
 	let { serviceModule: service } = profile;
 
