@@ -123,6 +123,16 @@ class Component {
 		return this._dataAbsentReason;
 	}
 
+	// interpretation		0..1	CodeableConcept	High, low, normal, etc.
+	// Observation Interpretation Codes (Extensible)
+	set interpretation(interpretation) {
+		this._interpretation = new CodeableConcept(interpretation);
+	}
+
+	get interpretation() {
+		return this._interpretation;
+	}
+
 	// 0..*	see referenceRange	Provides guide for interpretation of component result
 	set referenceRange(referenceRange) {
 		if (Array.isArray(referenceRange)) {
@@ -150,6 +160,7 @@ class Component {
 			valueDateTime: this._valueDateTime,
 			valuePeriod: this._valuePeriod,
 			dataAbsentReason: this._dataAbsentReason,
+			interpretation: this._interpretation,
 			referenceRange: this._referenceRange
 		};
 	}

@@ -27,14 +27,28 @@ class ReferenceRange {
 		return this._high;
 	}
 
-	// 0..1	CodeableConcept	Indicates the meaning/use of this range of this range
-	// Observation Reference Range Meaning Codes (Example)
-	set meaning(meaning) {
-		this._meaning = new CodeableConcept(meaning);
+	// type		0..1	CodeableConcept	Reference range qualifier
+	// Observation Reference Range Meaning Codes (Extensible)
+	set type(type) {
+		this._type = new CodeableConcept(type);
 	}
 
-	get meaning() {
-		return this._meaning;
+	get type() {
+		return this._type;
+	}
+
+	// appliesTo		0..*	CodeableConcept	Reference range population
+	// Observation Reference Range Applies To Codes (Example)
+	set appliesTo(appliesTo) {
+		if (Array.isArray(appliesTo)) {
+			this._appliesTo = appliesTo.map((i) => new CodeableConcept(i));
+		} else {
+			this._appliesTo = [new CodeableConcept(appliesTo)];
+		}
+	}
+
+	get appliesTo() {
+		return this._appliesTo;
 	}
 
 	// 0..1	Range	Applicable age range, if relevant
@@ -59,7 +73,8 @@ class ReferenceRange {
 		return {
 			low: this._low,
 			high: this._high,
-			meaning: this._meaning,
+			type: this._type,
+			appliesTo: this._appliesTo,
 			age: this._age,
 			text: this._text
 		};

@@ -105,8 +105,8 @@ describe('Patient Resource Tests', () => {
 		const contact1 = new PatientContact({
 			'relationship': [new CodeableConcept({
 				'coding': [new Coding({
-					'system': 'http://hl7.org/fhir/patient-contact-relationship',
-					'code': 'partner'
+					'system': 'http://hl7.org/fhir/ValueSet/v2-0131',
+					'code': 'BP'
 				})]
 			})],
 			'name': new HumanName({
@@ -207,8 +207,8 @@ describe('Patient Resource Tests', () => {
 			'contact': [{
 				'relationship': [{
 					'coding': [{
-						'system': 'http://hl7.org/fhir/patient-contact-relationship',
-						'code': 'partner'
+						'system': 'http://hl7.org/fhir/ValueSet/v2-0131',
+						'code': 'BP'
 					}]
 				}],
 				'name': {

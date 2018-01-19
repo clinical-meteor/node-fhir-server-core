@@ -14,7 +14,7 @@ class Link {
 		Object.assign(this, obj);
 	}
 
-	// other	?!	1..1	Reference(Patient)	The other patient resource that the link refers to
+	// other	Σ	1..1	Reference(Patient | RelatedPerson)	The other patient or related person resource that the link refers to
 	set other(other) {
 		this._other = new Reference(other);
 	}
@@ -23,7 +23,7 @@ class Link {
 		return this._other;
 	}
 
-	// type	?!	1..1	code	replace | refer | seealso - type of link
+	// type	?!	1..1	replaced-by | replaces | refer | seealso - type of link
 	// LinkType (Required)
 	set type(type) {
 		this._type = new Code(type);
@@ -48,7 +48,7 @@ class Communication {
 	}
 
 	// language		1..1	CodeableConcept	The language which can be used to communicate with the patient about his or her health
-	// Language  (Required)
+	// Common Languages (Extensible but limited to All Languages)
 	set language(language) {
 		this._language = language;
 	}
@@ -283,7 +283,7 @@ class Patient extends DomainResource {
 	}
 
 	// maritalStatus		0..1	CodeableConcept	Marital (civil) status of a patient
-	// Marital Status Codes (Required)
+	// Marital Status Codes (Extensible)
 	set maritalStatus(maritalStatus) {
 		this._maritalStatus = new CodeableConcept(maritalStatus);
 	}
@@ -361,17 +361,17 @@ class Patient extends DomainResource {
 		return this._communication;
 	}
 
-	// careProvider		0..*	Reference(Organization | Practitioner)	Patient's nominated primary care provider
-	set careProvider(careProvider) {
-		if (Array.isArray(careProvider)) {
-			this._careProvider = careProvider.map((x) => new Reference(x));
+	// generalPractitioner		0..*	Reference(Organization | Practitioner)	Patient's nominated primary care provider
+	set generalPractitioner(generalPractitioner) {
+		if (Array.isArray(generalPractitioner)) {
+			this._generalPractitioner = generalPractitioner.map((x) => new Reference(x));
 		} else {
-			this._careProvider = [new Reference(careProvider)];
+			this._generalPractitioner = [new Reference(generalPractitioner)];
 		}
 	}
 
-	get careProvider() {
-		return this._careProvider;
+	get generalPractitioner() {
+		return this._generalPractitioner;
 	}
 
 	// managingOrganization	Σ	0..1	Reference(Organization)	Organization that is the custodian of the patient record
@@ -414,7 +414,7 @@ class Patient extends DomainResource {
 			contact: this._contact,
 			animal: this._animal,
 			communication: this._communication,
-			careProvider: this._careProvider,
+			generalPractitioner: this._generalPractitioner,
 			managingOrganization: this._managingOrganization,
 			link: this._link
 		};

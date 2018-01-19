@@ -10,6 +10,7 @@ const Ratio = require('./types/Ratio');
 const Attachment = require('./types/Attachment');
 const SampledData = require('./types/SampledData');
 const Period = require('./types/Period');
+const Related = require('./types/Related');
 
 class Observation extends DomainResource {
 	constructor(obj) {
@@ -39,6 +40,19 @@ class Observation extends DomainResource {
 		return this._identifier;
 	}
 
+	// basedOn	Σ	0..*	Reference(CarePlan | DeviceRequest | ImmunizationRecommendation | MedicationRequest | NutritionOrder | ProcedureRequest | ReferralRequest)	Fulfills plan, proposal or order
+	set basedOn(basedOn) {
+		if (Array.isArray(basedOn)) {
+			this._basedOn = basedOn.map((i) => new Reference(i));
+		} else {
+			this._basedOn = [new Reference(basedOn)];
+		}
+	}
+
+	get basedOn() {
+		return this._basedOn;
+	}
+
 	// status	?! Σ	1..1	code	registered | preliminary | final | amended +
 	// ObservationStatus
 	set status(status) {
@@ -49,10 +63,14 @@ class Observation extends DomainResource {
 		return this._status;
 	}
 
-	// category		0..1	CodeableConcept	Classification of type of observation
+	// category		0..*	CodeableConcept	Classification of type of observation
 	// Observation Category Codes
 	set category(category) {
-		this._category = new CodeableConcept(category);
+		if (Array.isArray(category)) {
+			this._category = category.map((i) => new CodeableConcept(i));
+		} else {
+			this._category = [new CodeableConcept(category)];
+		}
 	}
 
 	get category() {
@@ -88,13 +106,13 @@ class Observation extends DomainResource {
 		);
 	}
 
-	// 0..1 Reference(Encounter) Healthcare event during which this observation is made
-	set encounter(encounter) {
-		this._encounter = new Reference(encounter);
+	// context		0..1	Reference(Encounter | EpisodeOfCare)	Healthcare event during which this observation is made
+	set context(context) {
+		this._context = new Reference(context);
 	}
 
-	get encounter() {
-		return this._encounter;
+	get context() {
+		return this._context;
 	}
 
 	// Σ	0..1 effectiveDateTime datetime Clinically relevant time/time-period for observation
@@ -155,6 +173,7 @@ class Observation extends DomainResource {
 	get valueCodeableConcept() {
 		return this._valueCodeableConcept;
 	}
+
 	// valueString			string
 	set valueString(value) {
 		this._valueString = value;
@@ -162,6 +181,15 @@ class Observation extends DomainResource {
 
 	get valueString() {
 		return this._valueString;
+	}
+
+	// valueBoolean			boolean
+	set valueBoolean(value) {
+		this._valueBoolean = value;
+	}
+
+	get valueBoolean() {
+		return this._valueBoolean;
 	}
 
 	// valueRange			Range
@@ -248,12 +276,12 @@ class Observation extends DomainResource {
 	}
 
 	// 	0..1	string	Comments about result
-	set comments(comments) {
-		this._comments = comments;
+	set comment(comment) {
+		this._comment = comment;
 	}
 
-	get comments() {
-		return this._comments;
+	get comment() {
+		return this._comment;
 	}
 
 	// 0..1	CodeableConcept	Observed body part
@@ -308,6 +336,19 @@ class Observation extends DomainResource {
 		return this._referenceRange;
 	}
 
+	// related	Σ	0..*	BackboneElement	Resource related to this observation
+	set related(related) {
+		if (Array.isArray(related)) {
+			this._related = related.map((x) => new Related(x));
+		} else {
+			this._related = [new Related(related)];
+		}
+	}
+
+	get related() {
+		return this._related;
+	}
+
 	// Σ	0..*	BackboneElement	Σ	0..*	BackboneElement	Component results results
 	set component(component) {
 		if (Array.isArray(component)) {
@@ -324,17 +365,19 @@ class Observation extends DomainResource {
 	toJSON() {
 		const json = {
 			identifier: this._identifier,
+			basedOn: this._basedOn,
 			status: this._status,
 			category: this._category,
 			code: this._code,
 			subject: this._subject,
-			encounter: this._encounter,
+			context: this._context,
 			effectiveDateTime: this._effectiveDateTime,
 			effectivePeriod: this._effectivePeriod,
 			performer: this._performer,
 			valueQuantity: this._valueQuantity,
 			valueCodeableConcept: this._valueCodeableConcept,
 			valueString: this._valueString,
+			valueBoolean: this._valueBoolean,
 			valueRange: this._valueRange,
 			valueRatio: this._valueRatio,
 			valueSampledData: this._valueSampledData,
@@ -344,10 +387,11 @@ class Observation extends DomainResource {
 			valuePeriod: this._valuePeriod,
 			dataAbsentReason: this._dataAbsentReason,
 			interpretation: this._interpretation,
-			comments: this._comments,
+			comment: this._comment,
 			bodySite: this._bodySite,
 			method: this._method,
 			referenceRange: this._referenceRange,
+			related: this._related,
 			component: this._component
 		};
 
