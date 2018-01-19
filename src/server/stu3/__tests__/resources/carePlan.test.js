@@ -1,13 +1,13 @@
 const path = require('path');
-const { CarePlan, RelatedPlan, Participant, Detail, Activity } = require(path.resolve('./src/server/dstu2/resources/CarePlan'));
-const Metadata = require(path.resolve('./src/server/dstu2/resources/types/Metadata'));
-const Identifier = require(path.resolve('./src/server/dstu2/resources/types/Identifier'));
-const Period = require(path.resolve('./src/server/dstu2/resources/types/Period'));
-const Reference = require(path.resolve('./src/server/dstu2/resources/types/Reference'));
-const CodeableConcept = require(path.resolve('./src/server/dstu2/resources/types/CodeableConcept'));
-const Coding = require(path.resolve('./src/server/dstu2/resources/types/Coding'));
-const Timing = require(path.resolve('./src/server/dstu2/resources/types/Timing'));
-const Annotation = require(path.resolve('./src/server/dstu2/resources/types/Annotation'));
+const { CarePlan, RelatedPlan, Participant, Detail, Activity } = require(path.resolve('./src/server/stu3/resources/CarePlan'));
+const Metadata = require(path.resolve('./src/server/stu3/resources/types/Metadata'));
+const Identifier = require(path.resolve('./src/server/stu3/resources/types/Identifier'));
+const Period = require(path.resolve('./src/server/stu3/resources/types/Period'));
+const Reference = require(path.resolve('./src/server/stu3/resources/types/Reference'));
+const CodeableConcept = require(path.resolve('./src/server/stu3/resources/types/CodeableConcept'));
+const Coding = require(path.resolve('./src/server/stu3/resources/types/Coding'));
+const Timing = require(path.resolve('./src/server/stu3/resources/types/Timing'));
+const Annotation = require(path.resolve('./src/server/stu3/resources/types/Annotation'));
 
 describe('CarePlan Resource Tests', () => {
 	test('should create a CarePlan Object default type', () => {

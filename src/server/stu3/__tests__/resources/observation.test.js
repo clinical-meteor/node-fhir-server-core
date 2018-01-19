@@ -1,13 +1,13 @@
 const path = require('path');
 const Validator = require('jsonschema').Validator;
 const observationSchema = require(path.resolve('./src/server/schemas/observation.schema'));
-const Observation = require(path.resolve('./src/server/dstu2/resources/Observation'));
-const Metadata = require(path.resolve('./src/server/dstu2/resources/types/Metadata'));
-const CodeableConcept = require(path.resolve('./src/server/dstu2/resources/types/CodeableConcept'));
-const Reference = require(path.resolve('./src/server/dstu2/resources/types/Reference'));
-const Quantity = require(path.resolve('./src/server/dstu2/resources/types/Quantity'));
-const Component = require(path.resolve('./src/server/dstu2/resources/types/Component'));
-const Coding = require(path.resolve('./src/server/dstu2/resources/types/Coding'));
+const Observation = require(path.resolve('./src/server/stu3/resources/Observation'));
+const Metadata = require(path.resolve('./src/server/stu3/resources/types/Metadata'));
+const CodeableConcept = require(path.resolve('./src/server/stu3/resources/types/CodeableConcept'));
+const Reference = require(path.resolve('./src/server/stu3/resources/types/Reference'));
+const Quantity = require(path.resolve('./src/server/stu3/resources/types/Quantity'));
+const Component = require(path.resolve('./src/server/stu3/resources/types/Component'));
+const Coding = require(path.resolve('./src/server/stu3/resources/types/Coding'));
 
 describe('Observation Resource Tests', () => {
 	test('should create an Observation Object default type', () => {
@@ -36,7 +36,7 @@ describe('Observation Resource Tests', () => {
 			})]
 		});
 		observation.subject = new Reference({reference: 'Patient/2228'});
-		observation.encounter = new Reference({reference: 'Encounter/2322'});
+		observation.context = new Reference({reference: 'Encounter/2322'});
 		observation.effectiveDateTime = '2016-09-09T13:11:02-04:00';
 		observation.valueQuantity = new Quantity({
 			value: 55283.0
@@ -94,7 +94,7 @@ describe('Observation Resource Tests', () => {
 			'subject': {
 				'reference': 'Patient/2228'
 			},
-			'encounter': {
+			'context': {
 				'reference': 'Encounter/2322'
 			},
 			'effectiveDateTime': '2016-09-09T13:11:02-04:00',
@@ -194,13 +194,13 @@ describe('Observation Resource Tests', () => {
 				value: '7799'
 			}],
 			status: 'final',
-			category: {
+			category: [{
 				coding: [{
 					system: 'http://hl7.org/fhir/observation-category',
 					code: 'laboratory',
 					display: 'Laboratory'
 				}]
-			},
+			}],
 			code: {
 				coding: [{
 					system: 'http://loinc.org',

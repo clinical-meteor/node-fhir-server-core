@@ -1,11 +1,11 @@
 const path = require('path');
-const { Encounter, StatusHistory, Participant, Hospitalization, Location } = require(path.resolve('./src/server/dstu2/resources/Encounter'));
-const Metadata = require(path.resolve('./src/server/dstu2/resources/types/Metadata'));
-const Identifier = require(path.resolve('./src/server/dstu2/resources/types/Identifier'));
-const Period = require(path.resolve('./src/server/dstu2/resources/types/Period'));
-const Reference = require(path.resolve('./src/server/dstu2/resources/types/Reference'));
-const CodeableConcept = require(path.resolve('./src/server/dstu2/resources/types/CodeableConcept'));
-const Coding = require(path.resolve('./src/server/dstu2/resources/types/Coding'));
+const { Encounter, StatusHistory, Participant, Hospitalization, Location } = require(path.resolve('./src/server/stu3/resources/Encounter'));
+const Metadata = require(path.resolve('./src/server/stu3/resources/types/Metadata'));
+const Identifier = require(path.resolve('./src/server/stu3/resources/types/Identifier'));
+const Period = require(path.resolve('./src/server/stu3/resources/types/Period'));
+const Reference = require(path.resolve('./src/server/stu3/resources/types/Reference'));
+const CodeableConcept = require(path.resolve('./src/server/stu3/resources/types/CodeableConcept'));
+const Coding = require(path.resolve('./src/server/stu3/resources/types/Coding'));
 
 describe('Encounter Resource Tests', () => {
 	test('should create an Encounter Object default type', () => {

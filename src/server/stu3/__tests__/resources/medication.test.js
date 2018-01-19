@@ -1,12 +1,12 @@
 const path = require('path');
-const { Medication, Product, Ingredient, Batch, MedicationPackage, Content } = require(path.resolve('./src/server/dstu2/resources/Medication'));
-const Metadata = require(path.resolve('./src/server/dstu2/resources/types/Metadata'));
-const Narrative = require(path.resolve('./src/server/dstu2/resources/types/Narrative'));
-const Reference = require(path.resolve('./src/server/dstu2/resources/types/Reference'));
-const CodeableConcept = require(path.resolve('./src/server/dstu2/resources/types/CodeableConcept'));
-const Coding = require(path.resolve('./src/server/dstu2/resources/types/Coding'));
-const Ratio = require(path.resolve('./src/server/dstu2/resources/types/Ratio'));
-const Quantity = require(path.resolve('./src/server/dstu2/resources/types/Quantity'));
+const { Medication, Product, Ingredient, Batch, MedicationPackage, Content } = require(path.resolve('./src/server/stu3/resources/Medication'));
+const Metadata = require(path.resolve('./src/server/stu3/resources/types/Metadata'));
+const Narrative = require(path.resolve('./src/server/stu3/resources/types/Narrative'));
+const Reference = require(path.resolve('./src/server/stu3/resources/types/Reference'));
+const CodeableConcept = require(path.resolve('./src/server/stu3/resources/types/CodeableConcept'));
+const Coding = require(path.resolve('./src/server/stu3/resources/types/Coding'));
+const Ratio = require(path.resolve('./src/server/stu3/resources/types/Ratio'));
+const Quantity = require(path.resolve('./src/server/stu3/resources/types/Quantity'));
 
 describe('Medication Resource Tests', () => {
 	test('should create an Medication Object default type', () => {

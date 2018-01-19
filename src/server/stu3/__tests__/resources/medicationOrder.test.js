@@ -1,15 +1,15 @@
 const path = require('path');
-const { MedicationOrder, DosageInstruction, DispenseRequest, Substitution } = require(path.resolve('./src/server/dstu2/resources/MedicationOrder'));
-const Metadata = require(path.resolve('./src/server/dstu2/resources/types/Metadata'));
-const Identifier = require(path.resolve('./src/server/dstu2/resources/types/Identifier'));
-const Period = require(path.resolve('./src/server/dstu2/resources/types/Period'));
-const Reference = require(path.resolve('./src/server/dstu2/resources/types/Reference'));
-const CodeableConcept = require(path.resolve('./src/server/dstu2/resources/types/CodeableConcept'));
-const Coding = require(path.resolve('./src/server/dstu2/resources/types/Coding'));
-const Range = require(path.resolve('./src/server/dstu2/resources/types/Range'));
-const Ratio = require(path.resolve('./src/server/dstu2/resources/types/Ratio'));
-const Quantity = require(path.resolve('./src/server/dstu2/resources/types/Quantity'));
-const Timing = require(path.resolve('./src/server/dstu2/resources/types/Timing'));
+const { MedicationOrder, DosageInstruction, DispenseRequest, Substitution } = require(path.resolve('./src/server/stu3/resources/MedicationOrder'));
+const Metadata = require(path.resolve('./src/server/stu3/resources/types/Metadata'));
+const Identifier = require(path.resolve('./src/server/stu3/resources/types/Identifier'));
+const Period = require(path.resolve('./src/server/stu3/resources/types/Period'));
+const Reference = require(path.resolve('./src/server/stu3/resources/types/Reference'));
+const CodeableConcept = require(path.resolve('./src/server/stu3/resources/types/CodeableConcept'));
+const Coding = require(path.resolve('./src/server/stu3/resources/types/Coding'));
+const Range = require(path.resolve('./src/server/stu3/resources/types/Range'));
+const Ratio = require(path.resolve('./src/server/stu3/resources/types/Ratio'));
+const Quantity = require(path.resolve('./src/server/stu3/resources/types/Quantity'));
+const Timing = require(path.resolve('./src/server/stu3/resources/types/Timing'));
 
 describe('MedicationOrder Resource Tests', () => {
 	test('should create an MedicationOrder Object default type', () => {

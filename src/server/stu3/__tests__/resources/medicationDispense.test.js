@@ -1,15 +1,15 @@
 const path = require('path');
-const { MedicationDispense, Substitution, DosageInstruction } = require(path.resolve('./src/server/dstu2/resources/MedicationDispense'));
-const Metadata = require(path.resolve('./src/server/dstu2/resources/types/Metadata'));
-const Identifier = require(path.resolve('./src/server/dstu2/resources/types/Identifier'));
-const Period = require(path.resolve('./src/server/dstu2/resources/types/Period'));
-const Reference = require(path.resolve('./src/server/dstu2/resources/types/Reference'));
-const CodeableConcept = require(path.resolve('./src/server/dstu2/resources/types/CodeableConcept'));
-const Coding = require(path.resolve('./src/server/dstu2/resources/types/Coding'));
-const Timing = require(path.resolve('./src/server/dstu2/resources/types/Timing'));
-const Ratio = require(path.resolve('./src/server/dstu2/resources/types/Ratio'));
-const Range = require(path.resolve('./src/server/dstu2/resources/types/Range'));
-const Quantity = require(path.resolve('./src/server/dstu2/resources/types/Quantity'));
+const { MedicationDispense, Substitution, DosageInstruction } = require(path.resolve('./src/server/stu3/resources/MedicationDispense'));
+const Metadata = require(path.resolve('./src/server/stu3/resources/types/Metadata'));
+const Identifier = require(path.resolve('./src/server/stu3/resources/types/Identifier'));
+const Period = require(path.resolve('./src/server/stu3/resources/types/Period'));
+const Reference = require(path.resolve('./src/server/stu3/resources/types/Reference'));
+const CodeableConcept = require(path.resolve('./src/server/stu3/resources/types/CodeableConcept'));
+const Coding = require(path.resolve('./src/server/stu3/resources/types/Coding'));
+const Timing = require(path.resolve('./src/server/stu3/resources/types/Timing'));
+const Ratio = require(path.resolve('./src/server/stu3/resources/types/Ratio'));
+const Range = require(path.resolve('./src/server/stu3/resources/types/Range'));
+const Quantity = require(path.resolve('./src/server/stu3/resources/types/Quantity'));
 
 describe('MedicationDispense Resource Tests', () => {
 	test('should create an MedicationDispense Object default type', () => {
