@@ -11,13 +11,13 @@ class TimingRepeat extends Element {
 	}
 
 	// bounds[x]	Σ	0..1		Length/Range of lengths, or (Start and/or end) limits
-	// boundsQuantity			Duration
-	set boundsQuantity(boundsQuantity) {
-		this._boundsQuantity = boundsQuantity;
+	// boundsDuration			Duration
+	set boundsDuration(boundsDuration) {
+		this._boundsDuration = boundsDuration;
 	}
 
-	get boundsQuantity() {
-		return this._boundsQuantity;
+	get boundsDuration() {
+		return this._boundsDuration;
 	}
 
 	// boundsRange			Range
@@ -47,6 +47,15 @@ class TimingRepeat extends Element {
 		return this._count;
 	}
 
+	// countMax	Σ	0..1	integer	Maximum number of times to repeat
+	set countMax(countMax) {
+		this._countMax = countMax;
+	}
+
+	get countMax() {
+		return this._countMax;
+	}
+
 	// duration	Σ I	0..1	decimal	How long when it happens
 	// duration SHALL be a non-negative value
 	set duration(duration) {
@@ -66,14 +75,14 @@ class TimingRepeat extends Element {
 		return this._durationMax;
 	}
 
-	// durationUnits	Σ	0..1	code	s | min | h | d | wk | mo | a - unit of time (UCUM)
+	// durationUnit	Σ	0..1	code	s | min | h | d | wk | mo | a - unit of time (UCUM)
 	//UnitsOfTime (Required)
-	set durationUnits(durationUnits) {
-		this._durationUnits = new Code(durationUnits);
+	set durationUnit(durationUnit) {
+		this._durationUnit = new Code(durationUnit);
 	}
 
-	get durationUnits() {
-		return this._durationUnits;
+	get durationUnit() {
+		return this._durationUnit;
 	}
 
 
@@ -114,41 +123,81 @@ class TimingRepeat extends Element {
 		return this._periodMax;
 	}
 
-	// periodUnits	Σ	0..1	code	s | min | h | d | wk | mo | a - unit of time (UCUM)
+	// periodUnit	Σ	0..1	code	s | min | h | d | wk | mo | a - unit of time (UCUM)
 	// UnitsOfTime (Required)
-	set periodUnits(periodUnits) {
-		this._periodUnits = new Code(periodUnits);
+	set periodUnit(periodUnit) {
+		this._periodUnit = new Code(periodUnit);
 	}
 
-	get periodUnits() {
-		return this._periodUnits;
+	get periodUnit() {
+		return this._periodUnit;
 	}
 
-	// when	Σ	0..1	code	Regular life events the event is tied to
+	// dayOfWeek	Σ	0..*	code	mon | tue | wed | thu | fri | sat | sun
+	// DaysOfWeek (Required)
+	set dayOfWeek(dayOfWeek) {
+		if (Array.isArray(dayOfWeek)) {
+			this._dayOfWeek = dayOfWeek.map((x) => new Code(x));
+		} else {
+			this._dayOfWeek = [new Code(dayOfWeek)];
+		}
+	}
+
+	get dayOfWeek() {
+		return this._dayOfWeek;
+	}
+
+	// timeOfDay	Σ	0..*	time	Time of day for action
+	set timeOfDay(timeOfDay) {
+		this._timeOfDay = [].concat(timeOfDay);
+	}
+
+	get timeOfDay() {
+		return this._timeOfDay;
+	}
+
+	// when	Σ	0..*	code	Regular life events the event is tied to
 	// EventTiming (Required)
 	set when(when) {
-		this._when = new Code(when);
+		if (Array.isArray(when)) {
+			this._when = when.map((x) => new Code(x));
+		} else {
+			this._when = [new Code(when)];
+		}
 	}
 
 	get when() {
 		return this._when;
 	}
 
+	// offset	Σ	0..1	unsignedInt	Minutes from event (before or after)
+	set offset(offset) {
+		this._offset = offset;
+	}
+
+	get offset() {
+		return this._offset;
+	}
+
 	toJSON() {
 		const json = {
-		boundsQuantity: this._boundsQuantity,
-		boundsRange: this._boundsRange,
-		boundsPeriod: this._boundsPeriod,
-		count: this._count,
-		duration: this._duration,
-		durationMax: this._durationMax,
-		durationUnits: this._durationUnits,
-		frequency: this._frequency,
-		frequencyMax: this._frequencyMax,
-		period: this._period,
-		periodMax: this._periodMax,
-		periodUnits: this._periodUnits,
-		when: this._when
+			boundsDuration: this.boundsDuration,
+			boundsRange: this._boundsRange,
+			boundsPeriod: this._boundsPeriod,
+			count: this._count,
+			countMax: this._countMax,
+			duration: this._duration,
+			durationMax: this._durationMax,
+			durationUnit: this._durationUnit,
+			frequency: this._frequency,
+			frequencyMax: this._frequencyMax,
+			period: this._period,
+			periodMax: this._periodMax,
+			periodUnit: this._periodUnit,
+			dayOfWeek: this._dayOfWeek,
+			timeOfDay: this._timeOfDay,
+			when: this._when,
+			offset: this._offset
 		};
 
 		return Object.assign(super.toJSON(), json);

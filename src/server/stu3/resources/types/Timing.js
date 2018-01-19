@@ -20,11 +20,15 @@ class Timing extends Element {
 	}
 
 	// Σ I	0..1	Element	When the event is to occur
-	// Either frequency or when can exist, not both
-	// if there's a duration, there needs to be duration units
-	// if there's a period, there needs to be period units
-	// If there's a periodMax, there must be a period
-	//If there's a durationMax, there must be a duration	set denominator(denominator) {
+	// + If there's an offset, there must be a when (and not C, CM, CD, CV)
+	// + period SHALL be a non-negative value
+	// + If there's a periodMax, there must be a period
+	// + If there's a durationMax, there must be a duration
+	// + If there's a countMax, there must be a count
+	// + if there's a duration, there needs to be duration units
+	// + If there's a timeOfDay, there cannot be be a when, or vice versa
+	// + if there's a period, there needs to be period units
+	// + duration SHALL be a non-negative value
 	set repeat(repeat) {
 		this._repeat = new TimingRepeat(repeat);
 	}

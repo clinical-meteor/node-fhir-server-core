@@ -52,7 +52,27 @@ class Signature extends Element {
 		return this._whoReference;
 	}
 
-	// contentType	Σ	1..1	code	The technical format of the signature
+	// onBehalfOf[x]	Σ	0..1		The party represented
+	// onBehalfOfUri			uri
+	set onBehalfOfUri(onBehalfOfUri) {
+		this._onBehalfOfUri = onBehalfOfUri;
+	}
+
+	get onBehalfOfUri() {
+		return this._onBehalfOfUri;
+	}
+
+	// onBehalfOf[x]	Σ	0..1		The party represented
+	// onBehalfOfReference			Reference(Practitioner | RelatedPerson | Patient | Device | Organization)
+	set onBehalfOfReference(onBehalfOfReference) {
+		this._onBehalfOfReference = new Reference(onBehalfOfReference);
+	}
+
+	get onBehalfOfReference() {
+		return this._onBehalfOfReference;
+	}
+
+	// contentType	Σ	0..1	code	The technical format of the signature
 	// MimeType  (Required)
 	set contentType(contentType) {
 		this._contentType = new Code(contentType);
@@ -62,7 +82,7 @@ class Signature extends Element {
 		return this._contentType;
 	}
 
-	// blob	Σ	1..1	base64Binary	The actual signature content (XML DigSig. JWT, picture, etc.)
+	// blob	Σ	0..1	base64Binary	The actual signature content (XML DigSig. JWT, picture, etc.)
 	set blob(blob) {
 		this._blob = blob;
 	}
@@ -77,6 +97,8 @@ class Signature extends Element {
 			when: this._when,
 			whoUri: this._whoUri,
 			whoReference: this._whoReference,
+			onBehalfOfUri: this._onBehalfOfUri,
+			onBehalfOfReference: this._onBehalfOfReference,
 			contentType: this._contentType,
 			blob: this._blob
 		};
