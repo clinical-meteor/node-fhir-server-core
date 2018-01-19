@@ -4,6 +4,7 @@ const Reference = require('./types/Reference');
 const Code = require('./types/Code');
 const Coding = require('./types/Coding');
 const Attachment = require('./types/Attachment');
+const OID = require('./types/OID');
 
 class Instance {
 	constructor(obj) {
@@ -21,7 +22,7 @@ class Instance {
 
 	// uid	Σ	1..1 	oid	Formal identifier for this instance
 	set uid(uid) {
-		this._uid = uid;
+		this._uid = new OID(uid);
 	}
 
 	get uid() {
@@ -30,7 +31,7 @@ class Instance {
 
 	// sopClass	Σ	1..1 	oid	DICOM class type
 	set sopClass(sopClass) {
-		this._sopClass = sopClass;
+		this._sopClass = new OID(sopClass);
 	}
 
 	get sopClass() {
@@ -106,7 +107,7 @@ class Series {
 
 	// uid	Σ	1..1	 oid	 Formal identifier for this series
 	set uid(uid) {
-		this._uid = uid;
+		this._uid = new OID(uid);
 	}
 
 	get uid() {
@@ -244,7 +245,7 @@ class ImagingStudy extends DomainResource{
 
 	// uid	Σ	1..1 oid	Formal identifier for the study
 	set uid(uid) {
-		this._uid = uid;
+		this._uid = new OID(uid);
 	}
 
 	get uid() {

@@ -8,7 +8,7 @@ class ContactPoint extends Element {
 		Object.assign(this, obj);
 	}
 
-	// system	Σ I	0..1	code	phone | fax | email | pager | other
+	// system	Σ I	0..1	code	phone | fax | email | pager | url | sms | other
 	// ContactPointSystem (Required)
 	set system(system){
 		this._system = new Code(system);

@@ -32,7 +32,7 @@ describe('ImagingStudy Resource Tests', () => {
 		imagingStudy.patient = new Reference({
 			'reference': 'Patient'
 		});
-		imagingStudy.uid = '1.3.6.1';
+		imagingStudy.uid = '1.2.3.4.5';
 		imagingStudy.accession = new Identifier({
 			'use': 'usual',
 			'type': {
@@ -91,8 +91,8 @@ describe('ImagingStudy Resource Tests', () => {
 
 		const instance1 = new Instance({
 			'number': '12',
-			'uid': '1.3.6.1',
-			'sopClass': '1.3.6.1',
+			'uid': '1.2.3.4.5',
+			'sopClass': '1.2.3.4.5',
 			'type': 'Image',
 			'title': 'It is an image',
 			'content': [new Attachment({
@@ -105,7 +105,7 @@ describe('ImagingStudy Resource Tests', () => {
 				'system': 'http://nema.org/dicom/dicm',
 				'code': 'AR'
 			}),
-			'uid': '1.3.6.1',
+			'uid': '1.2.3.4.5',
 			'description': 'A description',
 			'numberOfInstances': '13',
 			'availability': 'ONLINE',
@@ -134,7 +134,9 @@ describe('ImagingStudy Resource Tests', () => {
 			'patient': {
 				'reference': 'Patient'
 			},
-			'uid': '1.3.6.1',
+			'uid': {
+				'oid': '1.2.3.4.5'
+			},
 			'accession': {
 				'use': 'usual',
 				'type': {
@@ -196,7 +198,9 @@ describe('ImagingStudy Resource Tests', () => {
 					'system': 'http://nema.org/dicom/dicm',
 					'code': 'AR'
 				},
-				'uid': '1.3.6.1',
+				'uid': {
+					'oid': '1.2.3.4.5'
+				},
 				'description': 'A description',
 				'numberOfInstances': '13',
 				'availability': 'ONLINE',
@@ -212,8 +216,12 @@ describe('ImagingStudy Resource Tests', () => {
 				'started': '2017-07-08T15:57:49.482-04:00',
 				'instance': [{
 					'number': '12',
-					'uid': '1.3.6.1',
-					'sopClass': '1.3.6.1',
+					'uid': {
+						'oid': '1.2.3.4.5'
+					},
+					'sopClass': {
+						'oid': '1.2.3.4.5'
+					},
 					'type': 'Image',
 					'title': 'It is an image',
 					'content': [{
