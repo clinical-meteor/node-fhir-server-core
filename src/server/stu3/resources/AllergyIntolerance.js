@@ -4,6 +4,8 @@ const Reference = require('./types/Reference');
 const CodeableConcept = require('./types/CodeableConcept');
 const Code = require('./types/Code');
 const Annotation = require('./types/Annotation');
+const Period = require('./types/Period');
+const Range = require('./types/Range');
 
 class Reaction {
 	constructor(obj) {
@@ -18,12 +20,6 @@ class Reaction {
 
 	get substance() {
 		return this._substance;
-	}
-
-	// certainty	 Σ	0..1	 code	unlikely | likely | confirmed - clinical certainty about the specific substance
-	// AllergyIntoleranceCertainty (Required)
-	set certainty(certainty) {
-		this._certainty = new Code(certainty);
 	}
 
 	// manifestation	 Σ	1..*	 CodeableConcept	Clinical symptoms/signs associated with the Event
@@ -78,9 +74,13 @@ class Reaction {
 		return this._exposureRoute;
 	}
 
-	// note		0..1 	Annotation	Text about event not captured in other fields
+	// note		0..* 	Annotation	Text about event not captured in other fields
 	set note(note) {
-		this._note = new Annotation(note);
+		if (Array.isArray(note)) {
+			this._note = note.map((x) => new Annotation(x));
+		} else {
+			this._note = [new Annotation(note)];
+		}
 	}
 
 	get note() {
@@ -90,7 +90,6 @@ class Reaction {
 	toJSON() {
 		return {
 			substance: this._substance,
-			certainty: this._certainty,
 			manifestation: this._manifestation,
 			description: this.description,
 			onset: this._onset,
@@ -129,79 +128,24 @@ class AllergyIntolerance extends DomainResource {
 		return this._identifier;
 	}
 
-	// onset 	Σ	0..1	 dateTime	Date(/time) when manifestations showed
-	set onset(onset) {
-		this._onset = onset;
+	// clinicalStatus	?!ΣI	0..1	code	active | inactive | resolved
+	// AllergyIntoleranceClinicalStatus (Required)
+	set clinicalStatus(clinicalStatus) {
+		this._clinicalStatus = new Code(clinicalStatus);
 	}
 
-	get onset() {
-		return this._onset;
+	get clinicalStatus() {
+		return this._clinicalStatus;
 	}
 
-	// recordedDate	Σ	0..1	 dateTime	When recorded
-	set recordedDate(recordedDate) {
-		this._recordedDate = recordedDate;
+	// verificationStatus	?!ΣI	1..1	code	unconfirmed | confirmed | refuted | entered-in-error
+	// AllergyIntoleranceVerificationStatus (Required)
+	set verificationStatus(verificationStatus) {
+		this._verificationStatus = new Code(verificationStatus);
 	}
 
-	get recordedDate() {
-		return this._recordedDate;
-	}
-
-	// recorder	Σ	0..1	 Reference(Practitioner | Patient)	Who recorded the sensitivity
-	set recorder(recorder) {
-		this._recorder = new Reference(recorder);
-	}
-
-	get recorder() {
-		return this._recorder;
-	}
-
-	// patient	Σ	1..1 	Reference(Patient)	Who the sensitivity is for
-	set patient(patient) {
-		this._patient = new Reference(patient);
-	}
-
-	get patient() {
-		return this._patient;
-	}
-
-	// reporter	Σ	0..1	 Reference(Patient | RelatedPerson | Practitioner)	Source of the information about the allergy
-	set reporter(reporter) {
-		this._reporter = new Reference(reporter);
-	}
-
-	get reporter() {
-		return this._reporter;
-	}
-
-	// substance	 Σ	1..1	 CodeableConcept	Substance, (or class) considered to be responsible for risk
-	// AllergyIntolerance Substance and Negation Codes (Example)
-	set substance(substance) {
-		this._substance = new CodeableConcept(substance);
-	}
-
-	get substance() {
-		return this._substance;
-	}
-
-	// status	?! Σ	0..1 	code 	active | unconfirmed | confirmed | inactive | resolved | refuted | entered-in-error
-	// AllergyIntoleranceStatus (Required)
-	set status(status) {
-		this._status = new Code(status);
-	}
-
-	get status() {
-		return this._status;
-	}
-
-	// criticality	Σ	0..1 	code 	CRITL | CRITH | CRITU
-	// AllergyIntoleranceCriticality (Required)
-	set criticality(criticality) {
-		this._criticality = new Code(criticality);
-	}
-
-	get criticality() {
-		return this._criticality;
+	get verificationStatus() {
+		return this._verificationStatus;
 	}
 
 	// type	Σ	0..1	 code	allergy | intolerance - Underlying mechanism (if known)
@@ -214,28 +158,138 @@ class AllergyIntolerance extends DomainResource {
 		return this._type;
 	}
 
-	// category	Σ	0..1	 code	food | medication | environment | other - Category of Substance
+	// category	Σ	0..*	 code	food | medication | environment | biologic - Category of Substance
 	// AllergyIntoleranceCategory (Required)
 	set category(category) {
-		this._category = new Code(category);
+		if (Array.isArray(category)) {
+			this._category = category.map((x) => new Code(x));
+		} else {
+			this._category = [new Reaction(category)];
+		}
 	}
 
 	get category() {
 		return this._category;
 	}
 
-	// lastOccurence	 Σ	0..1 	dateTime	 Date(/time) of last known occurrence of a reaction
-	set lastOccurence(lastOccurence) {
-		this._lastOccurence = lastOccurence;
+	// criticality	Σ	0..1 	code 	low | high | unable-to-assess
+	// AllergyIntoleranceCriticality (Required)
+	set criticality(criticality) {
+		this._criticality = new Code(criticality);
 	}
 
-	get lastOccurence() {
-		return this._lastOccurence;
+	get criticality() {
+		return this._criticality;
 	}
 
-	// note		0..1 	Annotation	Additional text not captured in other fields
+	// code	Σ	0..1	CodeableConcept	Code that identifies the allergy or intolerance
+	// AllergyIntolerance Substance/Product, Condition and Negation Codes (Example)
+	set code(code) {
+		this._code = new CodeableConcept(code);
+	}
+
+	get code() {
+		return this._code;
+	}
+
+	// patient	Σ	1..1 	Reference(Patient)	Who the sensitivity is for
+	set patient(patient) {
+		this._patient = new Reference(patient);
+	}
+
+	get patient() {
+		return this._patient;
+	}
+
+	// onset[x]		0..1		When allergy or intolerance was identified
+	// onsetDateTime			dateTime
+	set onsetDateTime(onsetDateTime) {
+		this._onsetDateTime = onsetDateTime;
+	}
+
+	get onsetDateTime() {
+		return this._onsetDateTime;
+	}
+
+	// onsetAge			Age
+	set onsetAge(onsetAge) {
+		this._onsetAge = onsetAge;
+	}
+
+	get onsetAge() {
+		return this._onsetAge;
+	}
+
+	// onsetPeriod			Period
+	set onsetPeriod(onsetPeriod) {
+		this._onsetPeriod = new Period(onsetPeriod);
+	}
+
+	get onsetPeriod() {
+		return this._onsetPeriod;
+	}
+
+	// onsetRange			Range
+	set onsetRange(onsetRange) {
+		this._onsetRange = new Range(onsetRange);
+	}
+
+	get onsetRange() {
+		return this._onsetRange;
+	}
+
+	// onsetString			string
+	set onsetString(onsetString) {
+		this._onsetString = onsetString;
+	}
+
+	get onsetString() {
+		return this._onsetString;
+	}
+
+	// assertedDate		0..1	dateTime	Date record was believed accurate
+	set assertedDate(assertedDate) {
+		this._assertedDate = assertedDate;
+	}
+
+	get assertedDate() {
+		return this._assertedDate;
+	}
+
+	// recorder	Σ	0..1	 Reference(Practitioner | Patient)	Who recorded the sensitivity
+	set recorder(recorder) {
+		this._recorder = new Reference(recorder);
+	}
+
+	get recorder() {
+		return this._recorder;
+	}
+
+	// asserter	Σ	0..1	Reference(Patient | RelatedPerson | Practitioner)	Source of the information about the allergy
+	set asserter(asserter) {
+		this._asserter = new Reference(asserter);
+	}
+
+	get asserter() {
+		return this._asserter;
+	}
+
+	// lastOccurrence		0..1	dateTime	Date(/time) of last known occurrence of a reaction
+	set lastOccurrence(lastOccurrence) {
+		this._lastOccurrence = lastOccurrence;
+	}
+
+	get lastOccurrence() {
+		return this._lastOccurrence;
+	}
+
+	// note		0..* 	Annotation	Additional text not captured in other fields
 	set note(note) {
-		this._note = new Annotation(note);
+		if (Array.isArray(note)) {
+			this._note = note.map((x) => new Annotation(x));
+		} else {
+			this._note = [new Annotation(note)];
+		}
 	}
 
 	get note() {
@@ -257,20 +311,26 @@ class AllergyIntolerance extends DomainResource {
 
 	toJSON() {
 		const json = {
-				identifier: this._identifier,
-				onset: this._onset,
-				recordedDate: this._recordedDate,
-				recorder: this._recorder,
-				patient: this._patient,
-				reporter: this._reporter,
-				substance: this._substance,
-				status: this._status,
-				criticality: this._criticality,
-				type: this._type,
-				category: this._category,
-				lastOccurence: this._lastOccurence,
-				note: this._note,
-				reaction: this._reaction
+
+			identifier: this._identifier,
+			clinicalStatus: this._clinicalStatus,
+			verificationStatus: this._verificationStatus,
+			type: this._type,
+			category: this._category,
+			criticality: this._criticality,
+			code: this._code,
+			patient: this._patient,
+			onsetDateTime: this._onsetDateTime,
+			onsetAge: this._onsetAge,
+			onsetPeriod: this._onsetPeriod,
+			onsetRange: this._onsetRange,
+			onsetString: this._onsetString,
+			assertedDate: this._assertedDate,
+			recorder: this._recorder,
+			asserter: this._asserter,
+			lastOccurrence: this._lastOccurrence,
+			note: this._note,
+			reaction: this._reaction
 		};
 
 		return Object.assign({ resourceType: this._resourceType }, super.toJSON(), json);

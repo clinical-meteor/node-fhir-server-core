@@ -7,6 +7,7 @@ const Reference = require(path.resolve('./src/server/stu3/resources/types/Refere
 const CodeableConcept = require(path.resolve('./src/server/stu3/resources/types/CodeableConcept'));
 const Coding = require(path.resolve('./src/server/stu3/resources/types/Coding'));
 const Annotation = require(path.resolve('./src/server/stu3/resources/types/Annotation'));
+const Range = require(path.resolve('./src/server/stu3/resources/types/Range'));
 
 describe('AllergyIntolerance Resource Tests', () => {
 	test('should create an AllergyIntolerance Object default type', () => {
@@ -47,35 +48,45 @@ describe('AllergyIntolerance Resource Tests', () => {
 			})
 		});
 
-		allergyIntolerance.onset = '2016-09-09T13:11:02-04:00';
-		allergyIntolerance.recordedDate = '2016-09-10T13:11:02-04:00';
+		allergyIntolerance.clinicalStatus = 'active';
+		allergyIntolerance.verificationStatus = 'confirmed';
+		allergyIntolerance.onsetDateTime = '2016-09-09T13:11:02-04:00';
+		allergyIntolerance.onsetAge = '12';
+		allergyIntolerance.onsetPeriod = new Period({
+			'start': '2001-05-06'
+		});
+		allergyIntolerance.onsetRange = new Range({
+			'low': '1',
+			'high': '10'
+		});
+		allergyIntolerance.onsetString = 'Onset string';
+		allergyIntolerance.assertedDate = '2016-09-09T13:11:02-04:00';
 		allergyIntolerance.recorder = new Reference({
 			'reference': 'Practitioner'
 		});
 		allergyIntolerance.patient = new Reference({
 			'reference': 'Patient'
 		});
-		allergyIntolerance.reporter = new Reference({
+		allergyIntolerance.asserter = new Reference({
 			'reference': 'Patient'
 		});
-		allergyIntolerance.substance = new CodeableConcept({
+		allergyIntolerance.code = new CodeableConcept({
 			'coding': [new Coding({
 				'system': 'http://snomed.info/sct',
 				'code': '102002'
 			})]
 		});
-		allergyIntolerance.status = 'active';
-		allergyIntolerance.criticality = 'CRITL';
+		allergyIntolerance.criticality = 'low';
 		allergyIntolerance.type = 'intolerance';
-		allergyIntolerance.category = 'other';
-		allergyIntolerance.lastOccurence = '2016-09-03T13:11:02-04:00';
-		allergyIntolerance.note = new Annotation({
+		allergyIntolerance.category = ['food'];
+		allergyIntolerance.lastOccurrence = '2016-09-03T13:11:02-04:00';
+		allergyIntolerance.note = [new Annotation({
 			'authorReference': new Reference({
 				'reference': 'Patient'
 			}),
 			'authorString': 'John Doe',
 			'time': '2016-09-09T17:11:02-04:00'
-		});
+		})];
 
 		const reaction1 = new Reaction({
 			'substance': new CodeableConcept({
@@ -84,7 +95,6 @@ describe('AllergyIntolerance Resource Tests', () => {
 					'code': '102002'
 				})]
 			}),
-			'certainty': 'confirmed',
 			'manifestation': [new CodeableConcept({
 				'coding': [new Coding({
 					'system': 'http://snomed.info/sct',
@@ -100,12 +110,12 @@ describe('AllergyIntolerance Resource Tests', () => {
 					'code': '6064005'
 				})]
 			}),
-			'note': new Annotation({
+			'note': [new Annotation({
 				'authorReference': new Reference({
 					'reference': 'RelatedPerson'
 				}),
 				'time': '2016-09-09T17:11:02-04:00'
-			})
+			})]
 		});
 		allergyIntolerance.reaction = [reaction1];
 
@@ -133,35 +143,45 @@ describe('AllergyIntolerance Resource Tests', () => {
 					'display': 'Acme Healthcare'
 				}
 			}],
-			'onset': '2016-09-09T13:11:02-04:00',
-			'recordedDate': '2016-09-10T13:11:02-04:00',
-			'recorder': {
-				'reference': 'Practitioner'
-			},
-			'patient': {
-				'reference': 'Patient'
-			},
-			'reporter': {
-				'reference': 'Patient'
-			},
-			'substance': {
+			'clinicalStatus': 'active',
+			'verificationStatus': 'confirmed',
+			'type': 'intolerance',
+			'category': ['food'],
+			'criticality': 'low',
+			'code': {
 				'coding': [{
 					'system': 'http://snomed.info/sct',
 					'code': '102002'
 				}]
 			},
-			'status': 'active',
-			'criticality': 'CRITL',
-			'type': 'intolerance',
-			'category': 'other',
-			'lastOccurence': '2016-09-03T13:11:02-04:00',
-			'note': {
+			'patient': {
+				'reference': 'Patient'
+			},
+			'onsetDateTime': '2016-09-09T13:11:02-04:00',
+			'onsetAge': '12',
+			'onsetPeriod': {
+				'start': '2001-05-06'
+			},
+			'onsetRange': {
+				'low': '1',
+				'high': '10'
+			},
+			'onsetString': 'Onset string',
+			'assertedDate': '2016-09-09T13:11:02-04:00',
+			'recorder': {
+				'reference': 'Practitioner'
+			},
+			'asserter': {
+				'reference': 'Patient'
+			},
+			'lastOccurrence': '2016-09-03T13:11:02-04:00',
+			'note': [{
 				'authorReference': {
 					'reference': 'Patient'
 				},
 				'authorString': 'John Doe',
 				'time': '2016-09-09T17:11:02-04:00'
-			},
+			}],
 			'reaction': [{
 				'substance': {
 					'coding': [{
@@ -169,7 +189,6 @@ describe('AllergyIntolerance Resource Tests', () => {
 						'code': '102002'
 					}]
 				},
-				'certainty': 'confirmed',
 				'manifestation': [{
 					'coding': [{
 						'system': 'http://snomed.info/sct',
@@ -185,12 +204,12 @@ describe('AllergyIntolerance Resource Tests', () => {
 						'code': '6064005'
 					}]
 				},
-				'note': {
+				'note': [{
 					'authorReference': {
 						'reference': 'RelatedPerson'
 					},
 					'time': '2016-09-09T17:11:02-04:00'
-				}
+				}]
 			}]
 		};
 

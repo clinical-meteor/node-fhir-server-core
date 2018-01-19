@@ -26,6 +26,10 @@ class Reaction {
 		this._certainty = new Code(certainty);
 	}
 
+	get certainty() {
+		return this._certainty;
+	}
+
 	// manifestation	 Σ	1..*	 CodeableConcept	Clinical symptoms/signs associated with the Event
 	// SNOMED CT Clinical Findings (Example)
 	set manifestation(manifestation) {
