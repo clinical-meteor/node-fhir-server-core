@@ -1,15 +1,15 @@
 const path = require('path');
-const { DiagnosticReport, Image } = require(path.resolve('./src/server/stu3/resources/DiagnosticReport'));
+const { DiagnosticReport, Performer, Image } = require(path.resolve('./src/server/stu3/resources/DiagnosticReport'));
 const Metadata = require(path.resolve('./src/server/stu3/resources/types/Metadata'));
 const Identifier = require(path.resolve('./src/server/stu3/resources/types/Identifier'));
 const Period = require(path.resolve('./src/server/stu3/resources/types/Period'));
 const Reference = require(path.resolve('./src/server/stu3/resources/types/Reference'));
-const CodeableConcept = require(path.resolve('./src/server/stu3/resources/types/CodeableConcept'));
-const Coding = require(path.resolve('./src/server/stu3/resources/types/Coding'));
-const Attachment = require(path.resolve('./src/server/stu3/resources/types/Attachment'));
+const CodeableConcept = require(path.resolve('./src/server/dstu2/resources/types/CodeableConcept'));
+const Coding = require(path.resolve('./src/server/dstu2/resources/types/Coding'));
+const Attachment = require(path.resolve('./src/server/dstu2/resources/types/Attachment'));
 
 describe('DiagnosticReport Resource Tests', () => {
-	test('should create an DiagnosticReport Object default type', () => {
+	test('should create a DiagnosticReport Object default type', () => {
 		let diagnosticReport = new DiagnosticReport();
 
 		const expected = {
@@ -47,6 +47,9 @@ describe('DiagnosticReport Resource Tests', () => {
 			})
 		});
 
+		diagnosticReport.basedOn = [new Reference({
+			'reference': 'CarePlan'
+		})];
 		diagnosticReport.status = 'partial';
 		diagnosticReport.category = new CodeableConcept({
 			'coding': [new Coding({
@@ -63,21 +66,33 @@ describe('DiagnosticReport Resource Tests', () => {
 		diagnosticReport.subject = new Reference({
 			'reference': 'Patient'
 		});
-		diagnosticReport.encounter = new Reference({
+		diagnosticReport.context = new Reference({
 			'reference': 'Encounter'
 		});
 		diagnosticReport.effectiveDateTime = '2016-09-09T13:11:02-04:00';
 		diagnosticReport.effectivePeriod = new Period({
 			'start': '2001-05-06'
 		});
-		diagnosticReport.performer = new Reference({
-			'reference': 'Practitioner'
+		diagnosticReport.issued = '2016-09-09T13:11:02-04:00';
+
+		const performer1 = new Performer({
+			'role': new CodeableConcept({
+				'coding': [new Coding({
+					'system': 'http://snomed.info/sct',
+					'code': '1421009'
+				})]
+			}),
+			'actor': new Reference({
+				'reference': 'Practitioner'
+			})
 		});
-		diagnosticReport.request = [new Reference({
-			'reference': 'DiagnosticOrder'
-		})];
+		diagnosticReport.performer = [performer1];
+
 		diagnosticReport.specimen = [new Reference({
 			'reference': 'Specimen'
+		})];
+		diagnosticReport.result = [new Reference({
+			'reference': 'Observation'
 		})];
 		diagnosticReport.imagingStudy = [new Reference({
 			'reference': 'ImagingStudy'
@@ -126,6 +141,9 @@ describe('DiagnosticReport Resource Tests', () => {
 					'display': 'Acme Healthcare'
 				}
 			}],
+			'basedOn': [{
+				'reference': 'CarePlan'
+			}],
 			'status': 'partial',
 			'category': {
 				'coding': [{
@@ -142,21 +160,30 @@ describe('DiagnosticReport Resource Tests', () => {
 			'subject': {
 				'reference': 'Patient'
 			},
-			'encounter': {
+			'context': {
 				'reference': 'Encounter'
 			},
 			'effectiveDateTime': '2016-09-09T13:11:02-04:00',
 			'effectivePeriod': {
 				'start': '2001-05-06'
 			},
-			'performer': {
-				'reference': 'Practitioner'
-			},
-			'request': [{
-				'reference': 'DiagnosticOrder'
+			'issued': '2016-09-09T13:11:02-04:00',
+			'performer': [{
+				'role': {
+					'coding': [{
+						'system': 'http://snomed.info/sct',
+						'code': '1421009'
+					}]
+				},
+				'actor': {
+					'reference': 'Practitioner'
+				}
 			}],
 			'specimen': [{
 				'reference': 'Specimen'
+			}],
+			'result': [{
+				'reference': 'Observation'
 			}],
 			'imagingStudy': [{
 				'reference': 'ImagingStudy'

@@ -6,6 +6,38 @@ const Code = require('./types/Code');
 const Period = require('./types/Period');
 const Attachment = require('./types/Attachment');
 
+class Performer {
+	constructor(obj) {
+		Object.assign(this, obj);
+	}
+
+	// role	Σ	0..1	CodeableConcept	Type of performer
+	// Procedure Performer Role Codes (Example)
+	set role(role) {
+		this._role = new CodeableConcept(role);
+	}
+
+	get role() {
+		return this._role;
+	}
+
+	// actor	Σ	1..1	Reference(Practitioner | Organization)	Practitioner or Organization participant
+	set actor(actor) {
+		this._actor = new Reference(actor);
+	}
+
+	get actor() {
+		return this._actor;
+	}
+
+	toJSON() {
+		return {
+			role: this._role,
+			actor: this._actor
+		};
+	}
+}
+
 class Image {
 	constructor(obj) {
 		Object.assign(this, obj);
@@ -52,7 +84,7 @@ class DiagnosticReport extends DomainResource{
 		return this._resourceType;
 	}
 
-	// identifier	Σ	0..*	 Identifier	Id for external references to this report
+	// identifier	Σ	0..*	 Identifier	Business identifier for report
 	set identifier(identifier) {
 		if (Array.isArray(identifier)) {
 			this._identifier = identifier.map((i) => new Identifier(i));
@@ -65,7 +97,20 @@ class DiagnosticReport extends DomainResource{
 		return this._identifier;
 	}
 
-	// status	?! Σ	1..1 	code 	registered | partial | final | corrected | appended | cancelled | entered-in-error
+	// basedOn		0..*	Reference(CarePlan | ImmunizationRecommendation | MedicationRequest | NutritionOrder | ProcedureRequest | ReferralRequest)	What was requested
+	set basedOn(basedOn) {
+		if (Array.isArray(basedOn)) {
+			this._basedOn = basedOn.map((i) => new Reference(i));
+		} else {
+			this._basedOn = [new Reference(basedOn)];
+		}
+	}
+
+	get basedOn() {
+		return this._basedOn;
+	}
+
+	// status	?!Σ	1..1	code	registered | partial | preliminary | final +
 	// DiagnosticReportStatus (Required)
 	set status(status) {
 		this._status = new Code(status);
@@ -95,7 +140,7 @@ class DiagnosticReport extends DomainResource{
 		return this._code;
 	}
 
-	// subject	Σ	1..1 	Reference(Patient | Group | Device | Location)	The subject of the report, usually, but not always, the patient
+	// subject	Σ	0..1 	Reference(Patient | Group | Device | Location)	The subject of the report, usually, but not always, the patient
 	set subject(subject) {
 		this._subject = new Reference(subject);
 	}
@@ -104,16 +149,16 @@ class DiagnosticReport extends DomainResource{
 		return this._subject;
 	}
 
-	// encounter	Σ	0..1	 Reference(Encounter)	Health care event when test ordered
-	set encounter(encounter) {
-		this._encounter = new Reference(encounter);
+	// context	Σ	0..1	Reference(Encounter | EpisodeOfCare)	Health care event when test ordered
+	set context(context) {
+		this._context = new Reference(context);
 	}
 
-	get encounter() {
-		return this._encounter;
+	get context() {
+		return this._context;
 	}
 
-	// Σ	1..1		Clinically Relevant time/time-period for report
+	// effective[x]	Σ	0..1		Clinically relevant time/time-period for report
 	// effectiveDateTime			dateTime
 	set effectiveDateTime(effectiveDateTime) {
 		this._effectiveDateTime = effectiveDateTime;
@@ -123,7 +168,6 @@ class DiagnosticReport extends DomainResource{
 		return this._effectiveDateTime;
 	}
 
-	// Σ	1..1		Clinically Relevant time/time-period for report
 	// effectivePeriod			Period
 	set effectivePeriod(effectivePeriod) {
 		this._effectivePeriod = new Period(effectivePeriod);
@@ -133,7 +177,7 @@ class DiagnosticReport extends DomainResource{
 		return this._effectivePeriod;
 	}
 
-	// issued	Σ	1..1	 instant	DateTime this version was released
+	// issued	Σ	0..1	 instant	DateTime this version was released
 	set issued(issued) {
 		this._issued = issued;
 	}
@@ -142,26 +186,17 @@ class DiagnosticReport extends DomainResource{
 		return this._issued;
 	}
 
-	// performer	Σ	1..1	 Reference(Practitioner | Organization)	Responsible Diagnostic Service
+	// performer	Σ	0..*	BackboneElement	Participants in producing the report
 	set performer(performer) {
-		this._performer = new Reference(performer);
+		if (Array.isArray(performer)) {
+			this._performer = performer.map((i) => new Performer(i));
+		} else {
+			this._performer = [new Performer(performer)];
+		}
 	}
 
 	get performer() {
 		return this._performer;
-	}
-
-	// request		0..* 	Reference(DiagnosticOrder | ProcedureRequest | ReferralRequest)	What was requested
-	set request(request) {
-		if (Array.isArray(request)) {
-			this._request = request.map((i) => new Reference(i));
-		} else {
-			this._request = [new Reference(request)];
-		}
-	}
-
-	get request() {
-		return this._request;
 	}
 
 	// specimen		0..*	 Reference(Specimen)	Specimens this report is based on
@@ -190,7 +225,7 @@ class DiagnosticReport extends DomainResource{
 		return this._result;
 	}
 
-	// imagingStudy		0..*	 Reference(ImagingStudy | ImagingObjectSelection)	Reference to full details of imaging associated with the diagnostic report
+	// imagingStudy		0..*	 	Reference(ImagingStudy | ImagingManifest)	Reference to full details of imaging associated with the diagnostic report
 	set imagingStudy(imagingStudy) {
 		if (Array.isArray(imagingStudy)) {
 			this._imagingStudy = imagingStudy.map((i) => new Reference(i));
@@ -254,24 +289,24 @@ class DiagnosticReport extends DomainResource{
 
 	toJSON() {
 		const json = {
-				identifier: this._identifier,
-				status: this._status,
-				category: this._category,
-				code: this._code,
-				subject: this._subject,
-				encounter: this._encounter,
-				effectiveDateTime: this._effectiveDateTime,
-				effectivePeriod: this._effectivePeriod,
-				issued: this._issued,
-				performer: this._performer,
-				request: this._request,
-				specimen: this._specimen,
-				result: this._result,
-				imagingStudy: this._imagingStudy,
-				image: this._image,
-				conclusion: this._conclusion,
-				codedDiagnosis: this._codedDiagnosis,
-				presentedForm: this._presentedForm
+			identifier: this._identifier,
+			basedOn: this._basedOn,
+			status: this._status,
+			category: this._category,
+			code: this._code,
+			subject: this._subject,
+			context: this._context,
+			effectiveDateTime: this._effectiveDateTime,
+			effectivePeriod: this._effectivePeriod,
+			issued: this._issued,
+			performer: this._performer,
+			specimen: this._specimen,
+			result: this._result,
+			imagingStudy: this._imagingStudy,
+			image: this._image,
+			conclusion: this._conclusion,
+			codedDiagnosis: this._codedDiagnosis,
+			presentedForm: this._presentedForm
 		};
 
 		return Object.assign({ resourceType: this._resourceType }, super.toJSON(), json);
@@ -279,4 +314,5 @@ class DiagnosticReport extends DomainResource{
 }
 
 module.exports.DiagnosticReport = DiagnosticReport;
+module.exports.Performer = Performer;
 module.exports.Image = Image;

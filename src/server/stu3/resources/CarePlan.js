@@ -1,75 +1,11 @@
 const DomainResource = require('./types/DomainResource');
 const Identifier = require('./types/Identifier');
-const Reference = require('./types/Reference');
 const CodeableConcept = require('./types/CodeableConcept');
 const Code = require('./types/Code');
-const Period = require('./types/Period');
 const Annotation = require('./types/Annotation');
+const Reference = require('./types/Reference');
 const Timing = require('./types/Timing');
-
-class RelatedPlan {
-	constructor(obj) {
-		Object.assign(this, obj);
-	}
-
-	// code		0..1	 code	includes | replaces | fulfills
-	// CarePlanRelationship (Required)
-	set code(code) {
-		this._code = new Code(code);
-	}
-
-	get code() {
-		return this._code;
-	}
-
-	// plan		1..1 	Reference(CarePlan)	Plan relationship exists with
-	set plan(plan) {
-		this._plan = new Reference(plan);
-	}
-
-	get plan() {
-		return this._plan;
-	}
-
-	toJSON() {
-		return {
-			code: this._code,
-			plan: this._plan
-		};
-	}
-}
-
-class Participant {
-	constructor(obj) {
-		Object.assign(this, obj);
-	}
-
-	// role		0..1	CodeableConcept	Type of involvement
-	// Participant Roles (Example)
-	set role(role) {
-		this._role = new CodeableConcept(role);
-	}
-
-	get role() {
-		return this._role;
-	}
-
-	// member		0..1	Reference(Practitioner | RelatedPerson | Patient | Organization)	Who is involved
-	set member(member) {
-		this._member = new Reference(member);
-	}
-
-	get member() {
-		return this._member;
-	}
-
-	toJSON() {
-		return {
-			role: this._role,
-			member: this._member
-		};
-	}
-}
+const Period = require('./types/Period');
 
 class Detail {
 	constructor(obj) {
@@ -84,6 +20,15 @@ class Detail {
 
 	get category() {
 		return this._category;
+	}
+
+	// definition		0..1	Reference(PlanDefinition | ActivityDefinition | Questionnaire)	Protocol or definition
+	set definition(definition) {
+		this._definition = new Reference(definition);
+	}
+
+	get definition() {
+		return this._definition;
 	}
 
 	// code		0..1	CodeableConcept	Detail type of activity
@@ -136,7 +81,7 @@ class Detail {
 		return this._goal;
 	}
 
-	// status	?!	0..1	code	not-started | scheduled | in-progress | on-hold | completed | cancelled
+	// status	?!	1..1	code	not-started | scheduled | in-progress | on-hold | completed | cancelled | unknown
 	// CarePlanActivityStatus (Required)
 	set status(status) {
 		this._status = new Code(status);
@@ -146,17 +91,16 @@ class Detail {
 		return this._status;
 	}
 
-	// statusReason		0..1	CodeableConcept	Reason for current status
-	// GoalStatusReason (Example)
+	// statusReason		0..1	string	Reason for current status
 	set statusReason(statusReason) {
-		this._statusReason = new CodeableConcept(statusReason);
+		this._statusReason = statusReason;
 	}
 
 	get statusReason() {
 		return this._statusReason;
 	}
 
-	// prohibited	?!	1..1	boolean	Do NOT do
+	// prohibited	?!	0..1	boolean	Do NOT do
 	set prohibited(prohibited) {
 		this._prohibited = prohibited;
 	}
@@ -165,7 +109,7 @@ class Detail {
 		return this._prohibited;
 	}
 
-	// 0..1		When activity is to occur
+	// scheduled[x]		0..1		When activity is to occur
 	// scheduledTiming			Timing
 	set scheduledTiming(scheduledTiming) {
 		this._scheduledTiming = new Timing(scheduledTiming);
@@ -175,7 +119,6 @@ class Detail {
 		return this._scheduledTiming;
 	}
 
-	// 0..1		When activity is to occur
 	// scheduledPeriod			Period
 	set scheduledPeriod(scheduledPeriod) {
 		this._scheduledPeriod = new Period(scheduledPeriod);
@@ -185,7 +128,6 @@ class Detail {
 		return this._scheduledPeriod;
 	}
 
-	// 0..1		When activity is to occur
 	// scheduledString			string
 	set scheduledString(scheduledString) {
 		this._scheduledString = scheduledString;
@@ -204,7 +146,7 @@ class Detail {
 		return this._location;
 	}
 
-	// performer		0..*	Reference(Practitioner | Organization | RelatedPerson | Patient)	Who will be responsible?
+	// performer		0..*	Reference(Practitioner | Organization | RelatedPerson | Patient | CareTeam)	Who will be responsible?
 	set performer(performer) {
 		if (Array.isArray(performer)) {
 			this._performer = performer.map((i) => new Reference(i));
@@ -217,7 +159,7 @@ class Detail {
 		return this._performer;
 	}
 
-	// 0..1		What is to be administered/supplied
+	// product[x]		0..1		What is to be administered/supplied
 	// SNOMED CT Medication Codes (Example)
 	// productCodeableConcept			CodeableConcept
 	set productCodeableConcept(productCodeableConcept) {
@@ -228,8 +170,6 @@ class Detail {
 		return this._productCodeableConcept;
 	}
 
-	// 0..1		What is to be administered/supplied
-	// SNOMED CT Medication Codes (Example)
 	// productReference			Reference(Medication | Substance)
 	set productReference(productReference) {
 		this._productReference = new Reference(productReference);
@@ -269,6 +209,7 @@ class Detail {
 	toJSON() {
 		return {
 			category: this._category,
+			definition: this._definition,
 			code: this._code,
 			reasonCode: this._reasonCode,
 			reasonReference: this._reasonReference,
@@ -295,17 +236,31 @@ class Activity {
 		Object.assign(this, obj);
 	}
 
-	// actionResulting		0..*	Reference(Any)	Appointments, orders, etc.
-	set actionResulting(actionResulting) {
-		if (Array.isArray(actionResulting)) {
-			this._actionResulting = actionResulting.map((i) => new Reference(i));
+	// outcomeCodeableConcept		0..*	CodeableConcept	Results of the activity
+	// Care Plan Activity Outcome (Example)
+	set outcomeCodeableConcept(outcomeCodeableConcept) {
+		if (Array.isArray(outcomeCodeableConcept)) {
+			this._outcomeCodeableConcept = outcomeCodeableConcept.map((x) => new CodeableConcept(x));
 		} else {
-			this._actionResulting = [new Reference(actionResulting)];
+			this._outcomeCodeableConcept = [new CodeableConcept(outcomeCodeableConcept)];
 		}
 	}
 
-	get actionResulting() {
-		return this._actionResulting;
+	get outcomeCodeableConcept() {
+		return this._outcomeCodeableConcept;
+	}
+
+	// outcomeReference		0..*	Reference(Any)	Appointment, Encounter, Procedure, etc.
+	set outcomeReference(outcomeReference) {
+		if (Array.isArray(outcomeReference)) {
+			this._outcomeReference = outcomeReference.map((i) => new Reference(i));
+		} else {
+			this._outcomeReference = [new Reference(outcomeReference)];
+		}
+	}
+
+	get outcomeReference() {
+		return this._outcomeReference;
 	}
 
 	// progress		0..*	Annotation	Comments about the activity status/progress
@@ -321,8 +276,8 @@ class Activity {
 		return this._progress;
 	}
 
-	// reference	I	0..1	Reference(Appointment | CommunicationRequest | DeviceUseRequest | DiagnosticOrder | MedicationOrder | NutritionOrder | Order |
-	// ProcedureRequest | ProcessRequest | ReferralRequest | SupplyRequest | VisionPrescription)	Activity details defined in specific resource
+	// reference	I	0..1	Reference(Appointment | CommunicationRequest | DeviceRequest | MedicationRequest | NutritionOrder
+	// | Task | ProcedureRequest | ReferralRequest | VisionPrescription | RequestGroup)	Activity details defined in specific resource
 	set reference(reference) {
 		this._reference = new Reference(reference);
 	}
@@ -342,7 +297,8 @@ class Activity {
 
 	toJSON() {
 		return {
-			actionResulting: this._actionResulting,
+			outcomeCodeableConcept: this._outcomeCodeableConcept,
+			outcomeReference: this._outcomeReference,
 			progress: this._progress,
 			reference: this._reference,
 			detail: this._detail
@@ -378,16 +334,59 @@ class CarePlan extends DomainResource {
 		return this._identifier;
 	}
 
-	// subject	Σ	0..1	 Reference(Patient | Group)	Who care plan is for
-	set subject(subject) {
-		this._subject = new Reference(subject);
+	// definition	Σ	0..*	Reference(PlanDefinition | Questionnaire)	Protocol or definition
+	set definition(definition) {
+		if (Array.isArray(definition)) {
+			this._definition = definition.map((x) => new Reference(x));
+		} else {
+			this._definition = [new Reference(definition)];
+		}
 	}
 
-	get subject() {
-		return this._subject;
+	get definition() {
+		return this._definition;
 	}
 
-	// status	?! Σ	1..1	 code	proposed | draft | active | completed | cancelled
+	// basedOn	Σ	0..*	Reference(CarePlan)	Fulfills care plan
+	set basedOn(basedOn) {
+		if (Array.isArray(basedOn)) {
+			this._basedOn = basedOn.map((x) => new Reference(x));
+		} else {
+			this._basedOn = [new Reference(basedOn)];
+		}
+	}
+
+	get basedOn() {
+		return this._basedOn;
+	}
+
+	// replaces	Σ	0..*	Reference(CarePlan)	CarePlan replaced by this CarePlan
+	set replaces(replaces) {
+		if (Array.isArray(replaces)) {
+			this._replaces = replaces.map((x) => new Reference(x));
+		} else {
+			this._replaces = [new Reference(replaces)];
+		}
+	}
+
+	get replaces() {
+		return this._replaces;
+	}
+
+	// partOf	Σ	0..*	Reference(CarePlan)	Part of referenced CarePlan
+	set partOf(partOf) {
+		if (Array.isArray(partOf)) {
+			this._partOf = partOf.map((x) => new Reference(x));
+		} else {
+			this._partOf = [new Reference(partOf)];
+		}
+	}
+
+	get partOf() {
+		return this._partOf;
+	}
+
+	// status	?!Σ	1..1	code	draft | active | suspended | completed | entered-in-error | cancelled | unknown
 	// CarePlanStatus (Required)
 	set status(status) {
 		this._status = new Code(status);
@@ -395,6 +394,57 @@ class CarePlan extends DomainResource {
 
 	get status() {
 		return this._status;
+	}
+
+	// intent	?!Σ	1..1	code	proposal | plan | order | option
+	// CarePlanIntent (Required)
+	set intent(intent) {
+		this._intent = new Code(intent);
+	}
+
+	get intent() {
+		return this._intent;
+	}
+
+	// category	Σ	0..*	 CodeableConcept	Type of plan
+	// Care Plan Category (Example)
+	set category(category) {
+		if (Array.isArray(category)) {
+			this._category = category.map((x) => new CodeableConcept(x));
+		} else {
+			this._category = [new CodeableConcept(category)];
+		}
+	}
+
+	get category() {
+		return this._category;
+	}
+
+	// title	Σ	0..1	string	Human-friendly name for the CarePlan
+	set title(title) {
+		this._title = title;
+	}
+
+	get title() {
+		return this._title;
+	}
+
+	// description	Σ	0..1 	string	Summary of nature of plan
+	set description(description) {
+		this._description = description;
+	}
+
+	get description() {
+		return this._description;
+	}
+
+	// subject	Σ	1..1	 Reference(Patient | Group)	Who care plan is for
+	set subject(subject) {
+		this._subject = new Reference(subject);
+	}
+
+	get subject() {
+		return this._subject;
 	}
 
 	// context	Σ	0..1	 Reference(Encounter | EpisodeOfCare)	Created in context of
@@ -415,7 +465,7 @@ class CarePlan extends DomainResource {
 		return this._period;
 	}
 
-	// author	Σ	0..* 	Reference(Patient | Practitioner | RelatedPerson | Organization)	Who is responsible for contents of the plan
+	// author	Σ	0..*	Reference(Patient | Practitioner | RelatedPerson | Organization | CareTeam)	Who is responsible for contents of the plan
 	set author(author) {
 		if (Array.isArray(author)) {
 			this._author = author.map((x) => new Reference(x));
@@ -428,36 +478,17 @@ class CarePlan extends DomainResource {
 		return this._author;
 	}
 
-	// modified	Σ	0..1 	dateTime	When last updated
-	set modified(modified) {
-		this._modified = modified;
-	}
-
-	get modified() {
-		return this._modified;
-	}
-
-	// category	Σ	0..*	 CodeableConcept	Type of plan
-	// Care Plan Category (Example)
-	set category(category) {
-		if (Array.isArray(category)) {
-			this._category = category.map((x) => new CodeableConcept(x));
+	// careTeam		0..*	Reference(CareTeam)	Who's involved in plan?
+	set careTeam(careTeam) {
+		if (Array.isArray(careTeam)) {
+			this._careTeam = careTeam.map((x) => new Reference(x));
 		} else {
-			this._category = [new CodeableConcept(category)];
+			this._careTeam = [new Reference(careTeam)];
 		}
 	}
 
-	get category() {
-		return this._category;
-	}
-
-	// description	Σ	0..1 	string	Summary of nature of plan
-	set description(description) {
-		this._description = description;
-	}
-
-	get description() {
-		return this._description;
+	get careTeam() {
+		return this._careTeam;
 	}
 
 	// addresses 	Σ	0..*	 Reference(Condition)	Health issues this plan addresses
@@ -473,43 +504,17 @@ class CarePlan extends DomainResource {
 		return this._addresses;
 	}
 
-	// support		0..*	 Reference(Any)	Information considered as part of plan
-	set support(support) {
-		if (Array.isArray(support)) {
-			this._support = support.map((x) => new Reference(x));
+	// supportingInfo		0..*	Reference(Any)	Information considered as part of plan
+	set supportingInfo(supportingInfo) {
+		if (Array.isArray(supportingInfo)) {
+			this._supportingInfo = supportingInfo.map((x) => new Reference(x));
 		} else {
-			this._support = [new Reference(support)];
+			this._supportingInfo = [new Reference(supportingInfo)];
 		}
 	}
 
-	get support() {
-		return this._support;
-	}
-
-	// relatedPlan		0..*	 BackboneElement	Plans related to this one
-	set relatedPlan(relatedPlan) {
-		if (Array.isArray(relatedPlan)) {
-			this._relatedPlan = relatedPlan.map((x) => new RelatedPlan(x));
-		} else {
-			this._relatedPlan = [new RelatedPlan(relatedPlan)];
-		}
-	}
-
-	get relatedPlan() {
-		return this._relatedPlan;
-	}
-
-	// participant		0..*	 BackboneElement	Who's involved in plan?
-	set participant(participant) {
-		if (Array.isArray(participant)) {
-			this._participant = participant.map((x) => new Participant(x));
-		} else {
-			this._participant = [new Participant(participant)];
-		}
-	}
-
-	get participant() {
-		return this._participant;
+	get supportingInfo() {
+		return this._supportingInfo;
 	}
 
 	// goal		0..* 	Reference(Goal)	Desired outcome of plan
@@ -526,6 +531,7 @@ class CarePlan extends DomainResource {
 	}
 
 	// activity	I	0..*	 BackboneElement	Action to occur as part of plan
+	// + Provide a reference or detail, not both
 	set activity(activity) {
 		if (Array.isArray(activity)) {
 			this._activity = activity.map((x) => new Activity(x));
@@ -538,9 +544,13 @@ class CarePlan extends DomainResource {
 		return this._activity;
 	}
 
-	// note		0..1 	Annotation	Comments about the plan
+	// note		0..*	Annotation	Comments about the plan
 	set note(note) {
-		this._note = new Annotation(note);
+		if (Array.isArray(note)) {
+			this._note = note.map((x) => new Annotation(x));
+		} else {
+			this._note = [new Annotation(note)];
+		}
 	}
 
 	get note() {
@@ -549,22 +559,26 @@ class CarePlan extends DomainResource {
 
 	toJSON() {
 		const json = {
-				identifier: this._identifier,
-				subject: this._subject,
-				status: this._status,
-				context: this._context,
-				period: this._period,
-				author: this._author,
-				modified: this._modified,
-				category: this._category,
-				description: this._description,
-				addresses: this._addresses,
-				support: this._support,
-				relatedPlan: this._relatedPlan,
-				participant: this._participant,
-				goal: this._goal,
-				activity: this._activity,
-				note: this._note
+			identifier: this._identifier,
+			definition: this._definition,
+			basedOn: this._basedOn,
+			replaces: this._replaces,
+			partOf: this._partOf,
+			status: this._status,
+			intent: this._intent,
+			category: this._category,
+			title: this._title,
+			description: this._description,
+			subject: this._subject,
+			context: this._context,
+			period: this._period,
+			author: this._author,
+			careTeam: this._careTeam,
+			addresses: this._addresses,
+			supportingInfo: this._supportingInfo,
+			goal: this._goal,
+			activity: this._activity,
+			note: this._note
 		};
 
 		return Object.assign({ resourceType: this._resourceType }, super.toJSON(), json);
@@ -572,7 +586,5 @@ class CarePlan extends DomainResource {
 }
 
 module.exports.CarePlan = CarePlan;
-module.exports.RelatedPlan = RelatedPlan;
-module.exports.Participant = Participant;
 module.exports.Activity = Activity;
 module.exports.Detail = Detail;

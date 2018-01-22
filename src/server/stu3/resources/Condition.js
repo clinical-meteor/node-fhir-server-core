@@ -5,6 +5,7 @@ const CodeableConcept = require('./types/CodeableConcept');
 const Code = require('./types/Code');
 const Period = require('./types/Period');
 const Range = require('./types/Range');
+const Annotation = require('./types/Annotation');
 
 class Stage {
 	constructor(obj) {
@@ -47,10 +48,14 @@ class Evidence {
 		Object.assign(this, obj);
 	}
 
-	// code	Σ I	0..1	 CodeableConcept	Manifestation/symptom
+	// code	Σ I	0..*	 CodeableConcept	Manifestation/symptom
 	// Manifestation and Symptom Codes (Example)
 	set code(code) {
-		this._code = new CodeableConcept(code);
+		if (Array.isArray(code)) {
+			this._code = code.map((i) => new CodeableConcept(i));
+		} else {
+			this._code = [new CodeableConcept(code)];
+		}
 	}
 
 	get code() {
@@ -106,64 +111,8 @@ class Condition extends DomainResource {
 		return this._identifier;
 	}
 
-	// patient	Σ	1..1	Reference(Patient)	Who has the condition?
-	set patient(patient) {
-		this._patient = new Reference(patient);
-	}
-
-	get patient() {
-		return this._patient;
-	}
-
-	// encounter	Σ	0..1	Reference(Encounter)	Encounter when condition first asserted
-	set encounter(encounter) {
-		this._encounter = new Reference(encounter);
-	}
-
-	get encounter() {
-		return this._encounter;
-	}
-
-	// asserter	Σ	0..1	 Reference(Practitioner | Patient)	Person who asserts this condition
-	set asserter(asserter) {
-		this._asserter = new Reference(asserter);
-	}
-
-	get asserter() {
-		return this._asserter;
-	}
-
-	// dateRecorded	Σ	0..1	 date	When first entered
-	set dateRecorded(dateRecorded) {
-		this._dateRecorded = dateRecorded;
-	}
-
-	get dateRecorded() {
-		return this._dateRecorded;
-	}
-
-	// code	Σ	1..1 	CodeableConcept	Identification of the condition, problem or diagnosis
-	// Condition/Problem/Diagnosis Codes (Example)
-	set code(code) {
-		this._code = new CodeableConcept(code);
-	}
-
-	get code() {
-		return this._code;
-	}
-
-	// category	Σ	0..1	 CodeableConcept	complaint | symptom | finding | diagnosis
-	// Condition Category Codes (Preferred)
-	set category(category) {
-		this._category = new CodeableConcept(category);
-	}
-
-	get category() {
-		return this._category;
-	}
-
 	// clinicalStatus	?! Σ	0..1	 code	active | relapse | remission | resolved
-	// Condition Clinical Status Codes (Preferred)
+	// Condition Clinical Status Codes (Required)
 	set clinicalStatus(clinicalStatus) {
 		this._clinicalStatus = new Code(clinicalStatus);
 	}
@@ -172,7 +121,7 @@ class Condition extends DomainResource {
 		return this._clinicalStatus;
 	}
 
-	// verificationStatus	?! Σ	1..1	 code	provisional | differential | confirmed | refuted | entered-in-error | unknown
+	// verificationStatus	?! Σ	0..1	 code	provisional | differential | confirmed | refuted | entered-in-error | unknown
 	// ConditionVerificationStatus (Required)
 	set verificationStatus(verificationStatus) {
 		this._verificationStatus = new Code(verificationStatus);
@@ -180,6 +129,20 @@ class Condition extends DomainResource {
 
 	get verificationStatus() {
 		return this._verificationStatus;
+	}
+
+	// category	Σ	0..*	 CodeableConcept	complaint | symptom | finding | diagnosis
+	// Condition Category Codes (Preferred)
+	set category(category) {
+		if (Array.isArray(category)) {
+			this._category = category.map((i) => new CodeableConcept(i));
+		} else {
+			this._category = [new CodeableConcept(category)];
+		}
+	}
+
+	get category() {
+		return this._category;
 	}
 
 	// severity	Σ	0..1	 CodeableConcept	Subjective severity of condition
@@ -192,7 +155,49 @@ class Condition extends DomainResource {
 		return this._severity;
 	}
 
-	// Σ	0..1		Estimated or actual date, date-time, or age
+	// code	Σ	0..1 	CodeableConcept	Identification of the condition, problem or diagnosis
+	// Condition/Problem/Diagnosis Codes (Example)
+	set code(code) {
+		this._code = new CodeableConcept(code);
+	}
+
+	get code() {
+		return this._code;
+	}
+
+	// bodySite	Σ	0..* 	CodeableConcept	Anatomical location, if relevant
+	// SNOMED CT Body Structures (Example)
+	set bodySite(bodySite) {
+		if (Array.isArray(bodySite)) {
+			this._bodySite = bodySite.map((i) => new CodeableConcept(i));
+		} else {
+			this._bodySite = [new CodeableConcept(bodySite)];
+		}
+	}
+
+	get bodySite() {
+		return this._bodySite;
+	}
+
+	// subject	Σ	1..1	Reference(Patient | Group)	Who has the condition?
+	set subject(subject) {
+		this._subject = new Reference(subject);
+	}
+
+	get subject() {
+		return this._subject;
+	}
+
+	// context	Σ	0..1	Reference(Encounter | EpisodeOfCare)	Encounter or episode when condition first asserted
+	set context(context) {
+		this._context = new Reference(context);
+	}
+
+	get context() {
+		return this._context;
+	}
+
+	// onset[x]	Σ	0..1		Estimated or actual date, date-time, or age
 	// onsetDateTime			dateTime
 	set onsetDateTime(onsetDateTime) {
 		this._onsetDateTime = onsetDateTime;
@@ -202,17 +207,15 @@ class Condition extends DomainResource {
 		return this._onsetDateTime;
 	}
 
-	// Σ	0..1		Estimated or actual date, date-time, or age
-	// onsetQuantity			Age
-	set onsetQuantity(onsetQuantity) {
-		this._onsetQuantity = onsetQuantity;
+	// onsetAge			Age
+	set onsetAge(onsetAge) {
+		this._onsetAge = onsetAge;
 	}
 
-	get onsetQuantity() {
-		return this._onsetQuantity;
+	get onsetAge() {
+		return this._onsetAge;
 	}
 
-	// Σ	0..1		Estimated or actual date, date-time, or age
 	// onsetPeriod			Period
 	set onsetPeriod(onsetPeriod) {
 		this._onsetPeriod = new Period(onsetPeriod);
@@ -222,7 +225,6 @@ class Condition extends DomainResource {
 		return this._onsetPeriod;
 	}
 
-	// Σ	0..1		Estimated or actual date, date-time, or age
 	// onsetRange			Range
 	set onsetRange(onsetRange) {
 		this._onsetRange = new Range(onsetRange);
@@ -232,7 +234,6 @@ class Condition extends DomainResource {
 		return this._onsetRange;
 	}
 
-	// Σ	0..1		Estimated or actual date, date-time, or age
 	// onsetString			string
 	set onsetString(onsetString) {
 		this._onsetString = onsetString;
@@ -252,17 +253,15 @@ class Condition extends DomainResource {
 		return this._abatementDateTime;
 	}
 
-	// abatement[x]	Σ	0..1		If/when in resolution/remission
-	// abatementQuantity			Age
-	set abatementQuantity(abatementQuantity) {
-		this._abatementQuantity = abatementQuantity;
+	// abatementAge			Age
+	set abatementAge(abatementAge) {
+		this._abatementAge = abatementAge;
 	}
 
-	get abatementQuantity() {
-		return this._abatementQuantity;
+	get abatementAge() {
+		return this._abatementAge;
 	}
 
-	// abatement[x]	Σ	0..1		If/when in resolution/remission
 	// abatementBoolean			boolean
 	set abatementBoolean(abatementBoolean) {
 		this._abatementBoolean = abatementBoolean;
@@ -272,7 +271,6 @@ class Condition extends DomainResource {
 		return this._abatementBoolean;
 	}
 
-	// abatement[x]	Σ	0..1		If/when in resolution/remission
 	// abatementPeriod			Period
 	set abatementPeriod(abatementPeriod) {
 		this._abatementPeriod = new Period(abatementPeriod);
@@ -282,7 +280,6 @@ class Condition extends DomainResource {
 		return this._abatementPeriod;
 	}
 
-	// abatement[x]	Σ	0..1		If/when in resolution/remission
 	// abatementRange			Range
 	set abatementRange(abatementRange) {
 		this._abatementRange = new Range(abatementRange);
@@ -292,7 +289,6 @@ class Condition extends DomainResource {
 		return this._abatementRange;
 	}
 
-	// abatement[x]	Σ	0..1		If/when in resolution/remission
 	// abatementString			string
 	set abatementString(abatementString) {
 		this._abatementString = abatementString;
@@ -300,6 +296,24 @@ class Condition extends DomainResource {
 
 	get abatementString() {
 		return this._abatementString;
+	}
+
+	// assertedDate	Σ	0..1	dateTime	Date record was believed accurate
+	set assertedDate(assertedDate) {
+		this._assertedDate = assertedDate;
+	}
+
+	get assertedDate() {
+		return this._assertedDate;
+	}
+
+	// asserter	Σ	0..1	 Reference(Practitioner | Patient | RelatedPerson)	Person who asserts this condition
+	set asserter(asserter) {
+		this._asserter = new Reference(asserter);
+	}
+
+	get asserter() {
+		return this._asserter;
 	}
 
 	// stage 	Σ I	0..1	 BackboneElement	Stage/grade, usually assessed formally
@@ -326,56 +340,46 @@ class Condition extends DomainResource {
 		return this._evidence;
 	}
 
-	// bodySite	Σ	0..* 	CodeableConcept	Anatomical location, if relevant
-	// SNOMED CT Body Structures (Example)
-	set bodySite(bodySite) {
-		if (Array.isArray(bodySite)) {
-			this._bodySite = bodySite.map((i) => new CodeableConcept(i));
+	// note		0..*	Annotation	Additional information about the Condition
+	set note(note) {
+		if (Array.isArray(note)) {
+			this._note = note.map((i) => new Annotation(i));
 		} else {
-			this._bodySite = [new CodeableConcept(bodySite)];
+			this._note = [new Annotation(note)];
 		}
 	}
 
-	get bodySite() {
-		return this._bodySite;
-	}
-
-	// notes	 Σ	0..1 	string	Additional information about the Condition
-	set notes(notes) {
-		this._notes = notes;
-	}
-
-	get notes() {
-		return this._notes;
+	get note() {
+		return this._note;
 	}
 
 	toJSON() {
 		const json = {
-				identifier: this._identifier,
-				patient: this._patient,
-				encounter: this._encounter,
-				asserter: this._asserter,
-				dateRecorded: this._dateRecorded,
-				code: this._code,
-				category: this._category,
-				clinicalStatus: this._clinicalStatus,
-				verificationStatus: this._verificationStatus,
-				severity: this._severity,
-				onsetDateTime: this._onsetDateTime,
-				onsetQuantity: this._onsetQuantity,
-				onsetPeriod: this._onsetPeriod,
-				onsetRange: this._onsetRange,
-				onsetString: this._onsetString,
-				abatementDateTime: this._abatementDateTime,
-				abatementQuantity: this._abatementQuantity,
-				abatementBoolean: this._abatementBoolean,
-				abatementPeriod: this._abatementPeriod,
-				abatementRange: this._abatementRange,
-				abatementString: this._abatementString,
-				stage: this._stage,
-				evidence: this._evidence,
-				bodySite: this._bodySite,
-				notes: this._notes
+			identifier: this._identifier,
+			clinicalStatus: this._clinicalStatus,
+			verificationStatus: this._verificationStatus,
+			category: this._category,
+			severity: this._severity,
+			code: this._code,
+			bodySite: this._bodySite,
+			subject: this._subject,
+			context: this._context,
+			onsetDateTime: this._onsetDateTime,
+			onsetAge: this._onsetAge,
+			onsetPeriod: this._onsetPeriod,
+			onsetRange: this._onsetRange,
+			onsetString: this._onsetString,
+			abatementDateTime: this._abatementDateTime,
+			abatementAge: this._abatementAge,
+			abatementBoolean: this._abatementBoolean,
+			abatementPeriod: this._abatementPeriod,
+			abatementRange: this._abatementRange,
+			abatementString: this._abatementString,
+			assertedDate: this._assertedDate,
+			asserter: this._asserter,
+			stage: this._stage,
+			evidence: this._evidence,
+			note: this._note
 		};
 
 		return Object.assign({ resourceType: this._resourceType }, super.toJSON(), json);

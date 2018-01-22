@@ -1,5 +1,5 @@
 const path = require('path');
-const { CarePlan, RelatedPlan, Participant, Detail, Activity } = require(path.resolve('./src/server/stu3/resources/CarePlan'));
+const { CarePlan, Activity, Detail } = require(path.resolve('./src/server/stu3/resources/CarePlan'));
 const Metadata = require(path.resolve('./src/server/stu3/resources/types/Metadata'));
 const Identifier = require(path.resolve('./src/server/stu3/resources/types/Identifier'));
 const Period = require(path.resolve('./src/server/stu3/resources/types/Period'));
@@ -48,10 +48,31 @@ describe('CarePlan Resource Tests', () => {
 			})
 		});
 
+		carePlan.definition = [new Reference({
+			'reference': 'PlanDefinition'
+		})];
+		carePlan.basedOn = [new Reference({
+			'reference': 'CarePlan'
+		})];
+		carePlan.replaces = [new Reference({
+			'reference': 'CarePlan'
+		})];
+		carePlan.partOf = [new Reference({
+			'reference': 'CarePlan'
+		})];
+		carePlan.status = 'suspended';
+		carePlan.intent = 'plan';
+		carePlan.category = [new CodeableConcept({
+			'coding': [new Coding({
+				'system': 'http://snomed.info/sct',
+				'code': '288832002'
+			})]
+		})];
+		carePlan.title = 'Care Plan';
+		carePlan.description = 'A description';
 		carePlan.subject = new Reference({
 			'reference': 'Patient'
 		});
-		carePlan.status = 'proposed';
 		carePlan.context = new Reference({
 			'reference': 'Encounter'
 		});
@@ -61,42 +82,15 @@ describe('CarePlan Resource Tests', () => {
 		carePlan.author = [new Reference({
 			'reference': 'Patient'
 		})];
-		carePlan.modified = '2017-07-08T15:57:49.482-04:00';
-		carePlan.category = [new CodeableConcept({
-			'coding': [new Coding({
-				'system': 'http://snomed.info/sct',
-				'code': '288832002'
-			})]
+		carePlan.careTeam = [new Reference({
+			'reference': 'CareTeam'
 		})];
-		carePlan.description = 'A description';
 		carePlan.addresses = [new Reference({
 			'reference': 'Condition'
 		})];
-		carePlan.support = [new Reference({
+		carePlan.supportingInfo = [new Reference({
 			'reference': 'Any'
 		})];
-
-		const relatedPlan1 = new RelatedPlan({
-			'code': 'includes',
-			'plan': new Reference({
-				'reference': 'CarePlan'
-			})
-		});
-		carePlan.relatedPlan = [relatedPlan1];
-
-		const participant1 = new Participant({
-			'role': new CodeableConcept({
-				'coding': [new Coding({
-					'system': 'http://snomed.info/sct',
-					'code': '270002'
-				})]
-			}),
-			'member': new Reference({
-				'reference': 'Practitioner'
-			})
-		});
-		carePlan.participant = [participant1];
-
 		carePlan.goal = [new Reference({
 			'reference': 'Goal'
 		})];
@@ -107,6 +101,9 @@ describe('CarePlan Resource Tests', () => {
 					'system': 'http://hl7.org/fhir/care-plan-activity-category',
 					'code': 'diet'
 				})]
+			}),
+			'definition': new Reference({
+				'reference': 'PlanDefinition'
 			}),
 			'code': new CodeableConcept({
 				'coding': [new Coding({
@@ -127,12 +124,7 @@ describe('CarePlan Resource Tests', () => {
 				'reference': 'Goal'
 			})],
 			'status': 'not-started',
-			'statusReason': new CodeableConcept({
-				'coding': [new Coding({
-					'system': 'http://hl7.org/fhir/goal-status-reason',
-					'code': 'surgery'
-				})]
-			}),
+			'statusReason': 'A reason',
 			'prohibited': true,
 			'scheduledTiming': new Timing({
 				'code': 'QD'
@@ -161,15 +153,21 @@ describe('CarePlan Resource Tests', () => {
 			'description': 'Extra information'
 		});
 		const activity1 = new Activity({
-			'actionResulting': [new Reference({
+			'outcomeCodeableConcept': [new CodeableConcept({
+				'coding': [new Coding({
+					'system': 'http://snomed.info/sct',
+					'code': '54777007'
+				})]
+			})],
+			'outcomeReference': [new Reference({
 				'reference': 'Any'
 			})],
-			'progress': new Annotation({
+			'progress': [new Annotation({
 				'authorReference': new Reference({
 					'reference': 'RelatedPerson'
 				}),
 				'time': '2016-09-09T17:11:02-04:00'
-			}),
+			})],
 			'reference': new Reference({
 				'reference': 'Appointment'
 			}),
@@ -177,12 +175,12 @@ describe('CarePlan Resource Tests', () => {
 		});
 		carePlan.activity = [activity1];
 
-		carePlan.note = new Annotation({
+		carePlan.note = [new Annotation({
 			'authorReference': new Reference({
 				'reference': 'RelatedPerson'
 			}),
 			'time': '2016-09-09T17:11:02-04:00'
-		});
+		})];
 
 		const expected = {
 			resourceType: 'CarePlan',
@@ -208,10 +206,31 @@ describe('CarePlan Resource Tests', () => {
 					'display': 'Acme Healthcare'
 				}
 			}],
+			'definition': [{
+				'reference': 'PlanDefinition'
+			}],
+			'basedOn': [{
+				'reference': 'CarePlan'
+			}],
+			'replaces': [{
+				'reference': 'CarePlan'
+			}],
+			'partOf': [{
+				'reference': 'CarePlan'
+			}],
+			'status': 'suspended',
+			'intent': 'plan',
+			'category': [{
+				'coding': [{
+					'system': 'http://snomed.info/sct',
+					'code': '288832002'
+				}]
+			}],
+			'title': 'Care Plan',
+			'description': 'A description',
 			'subject': {
 				'reference': 'Patient'
 			},
-			'status': 'proposed',
 			'context': {
 				'reference': 'Encounter'
 			},
@@ -221,42 +240,26 @@ describe('CarePlan Resource Tests', () => {
 			'author': [{
 				'reference': 'Patient'
 			}],
-			'modified': '2017-07-08T15:57:49.482-04:00',
-			'category': [{
-				'coding': [{
-					'system': 'http://snomed.info/sct',
-					'code': '288832002'
-				}]
+			'careTeam': [{
+				'reference': 'CareTeam'
 			}],
-			'description': 'A description',
 			'addresses': [{
 				'reference': 'Condition'
 			}],
-			'support': [{
+			'supportingInfo': [{
 				'reference': 'Any'
-			}],
-			'relatedPlan': [{
-				'code': 'includes',
-				'plan': {
-					'reference': 'CarePlan'
-				}
-			}],
-			'participant': [{
-				'role': {
-					'coding': [{
-						'system': 'http://snomed.info/sct',
-						'code': '270002'
-					}]
-				},
-				'member': {
-					'reference': 'Practitioner'
-				}
 			}],
 			'goal': [{
 				'reference': 'Goal'
 			}],
 			'activity': [{
-				'actionResulting': [{
+				'outcomeCodeableConcept': [{
+					'coding': [{
+						'system': 'http://snomed.info/sct',
+						'code': '54777007'
+					}]
+				}],
+				'outcomeReference': [{
 					'reference': 'Any'
 				}],
 				'progress': [{
@@ -274,6 +277,9 @@ describe('CarePlan Resource Tests', () => {
 							'system': 'http://hl7.org/fhir/care-plan-activity-category',
 							'code': 'diet'
 						}]
+					},
+					'definition': {
+						'reference': 'PlanDefinition'
 					},
 					'code': {
 						'coding': [{
@@ -294,12 +300,7 @@ describe('CarePlan Resource Tests', () => {
 						'reference': 'Goal'
 					}],
 					'status': 'not-started',
-					'statusReason': {
-						'coding': [{
-							'system': 'http://hl7.org/fhir/goal-status-reason',
-							'code': 'surgery'
-						}]
-					},
+					'statusReason': 'A reason',
 					'prohibited': true,
 					'scheduledTiming': {
 						'code': 'QD'
@@ -328,12 +329,12 @@ describe('CarePlan Resource Tests', () => {
 					'description': 'Extra information'
 				}
 			}],
-			'note': {
+			'note': [{
 				'authorReference': {
 					'reference': 'RelatedPerson'
 				},
 				'time': '2016-09-09T17:11:02-04:00'
-			}
+			}]
 		};
 
 		expect(JSON.stringify(carePlan)).toEqual(JSON.stringify(expected));

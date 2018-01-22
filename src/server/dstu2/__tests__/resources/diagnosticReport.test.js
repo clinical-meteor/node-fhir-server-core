@@ -9,7 +9,7 @@ const Coding = require(path.resolve('./src/server/dstu2/resources/types/Coding')
 const Attachment = require(path.resolve('./src/server/dstu2/resources/types/Attachment'));
 
 describe('DiagnosticReport Resource Tests', () => {
-	test('should create an DiagnosticReport Object default type', () => {
+	test('should create a DiagnosticReport Object default type', () => {
 		let diagnosticReport = new DiagnosticReport();
 
 		const expected = {
@@ -70,6 +70,7 @@ describe('DiagnosticReport Resource Tests', () => {
 		diagnosticReport.effectivePeriod = new Period({
 			'start': '2001-05-06'
 		});
+		diagnosticReport.issued = '2016-09-09T13:11:02-04:00';
 		diagnosticReport.performer = new Reference({
 			'reference': 'Practitioner'
 		});
@@ -78,6 +79,9 @@ describe('DiagnosticReport Resource Tests', () => {
 		})];
 		diagnosticReport.specimen = [new Reference({
 			'reference': 'Specimen'
+		})];
+		diagnosticReport.result = [new Reference({
+			'reference': 'Observation'
 		})];
 		diagnosticReport.imagingStudy = [new Reference({
 			'reference': 'ImagingStudy'
@@ -149,6 +153,7 @@ describe('DiagnosticReport Resource Tests', () => {
 			'effectivePeriod': {
 				'start': '2001-05-06'
 			},
+			'issued': '2016-09-09T13:11:02-04:00',
 			'performer': {
 				'reference': 'Practitioner'
 			},
@@ -157,6 +162,9 @@ describe('DiagnosticReport Resource Tests', () => {
 			}],
 			'specimen': [{
 				'reference': 'Specimen'
+			}],
+			'result': [{
+				'reference': 'Observation'
 			}],
 			'imagingStudy': [{
 				'reference': 'ImagingStudy'

@@ -4,9 +4,10 @@ const Metadata = require(path.resolve('./src/server/stu3/resources/types/Metadat
 const Identifier = require(path.resolve('./src/server/stu3/resources/types/Identifier'));
 const Period = require(path.resolve('./src/server/stu3/resources/types/Period'));
 const Reference = require(path.resolve('./src/server/stu3/resources/types/Reference'));
-const CodeableConcept = require(path.resolve('./src/server/stu3/resources/types/CodeableConcept'));
-const Coding = require(path.resolve('./src/server/stu3/resources/types/Coding'));
-const Range = require(path.resolve('./src/server/stu3/resources/types/Range'));
+const Annotation = require(path.resolve('./src/server/stu3/resources/types/Annotation'));
+const CodeableConcept = require(path.resolve('./src/server/dstu2/resources/types/CodeableConcept'));
+const Coding = require(path.resolve('./src/server/dstu2/resources/types/Coding'));
+const Range = require(path.resolve('./src/server/dstu2/resources/types/Range'));
 
 describe('Condition Resource Tests', () => {
 	test('should create an Condition Object default type', () => {
@@ -47,38 +48,40 @@ describe('Condition Resource Tests', () => {
 			})
 		});
 
-		condition.patient = new Reference({
-			'reference': 'Patient'
-		});
-		condition.encounter = new Reference({
-			'reference': 'Encounter'
-		});
-		condition.asserter = new Reference({
-			'reference': 'Practitioner'
-		});
-		condition.dateRecorded = '2001-05-06';
-		condition.code = new CodeableConcept({
-			'coding': [new Coding({
-				'system': 'http://snomed.info/sct',
-				'code': '109006'
-			})]
-		});
-		condition.category = new CodeableConcept({
+		condition.clinicalStatus = 'active';
+		condition.verificationStatus = 'provisional';
+		condition.category = [new CodeableConcept({
 			'coding': [new Coding({
 				'system': 'http://hl7.org/fhir/condition-category',
 				'code': 'complaint'
 			})]
-		});
-		condition.clinicalStatus = 'active';
-		condition.verificationStatus = 'provisional';
+		})];
 		condition.severity = new CodeableConcept({
 			'coding': [new Coding({
 				'system': 'http://snomed.info/sct',
 				'code': '399166001'
 			})]
 		});
+		condition.code = new CodeableConcept({
+			'coding': [new Coding({
+				'system': 'http://snomed.info/sct',
+				'code': '109006'
+			})]
+		});
+		condition.bodySite = new CodeableConcept({
+			'coding': [new Coding({
+				'system': 'http://snomed.info/sct',
+				'code': '106004'
+			})]
+		});
+		condition.subject = new Reference({
+			'reference': 'Patient'
+		});
+		condition.context = new Reference({
+			'reference': 'Encounter'
+		});
 		condition.onsetDateTime = '2017-07-08T15:57:49.482-04:00';
-		condition.onsetQuantity = '52';
+		condition.onsetAge = '52';
 		condition.onsetPeriod = new Period({
 			'start': '2001-05-06'
 		});
@@ -88,7 +91,7 @@ describe('Condition Resource Tests', () => {
 		});
 		condition.onsetString = 'Some string';
 		condition.abatementDateTime = '2017-07-08T15:57:49.482-04:00';
-		condition.abatementQuantity = '52';
+		condition.abatementAge = '52';
 		condition.abatementBoolean = true;
 		condition.abatementPeriod = new Period({
 			'start': '2001-05-06'
@@ -98,6 +101,10 @@ describe('Condition Resource Tests', () => {
 			'high': '10'
 		});
 		condition.abatementString = 'Some string';
+		condition.assertedDate = '2017-07-08T15:57:49.482-04:00';
+		condition.asserter = new Reference({
+			'reference': 'Practitioner'
+		});
 
 		const stage1 = new Stage({
 			'summary': new CodeableConcept({
@@ -113,25 +120,24 @@ describe('Condition Resource Tests', () => {
 		condition.stage = stage1;
 
 		const evidence1 = new Evidence({
-			'code': new CodeableConcept({
+			'code': [new CodeableConcept({
 				'coding': [new Coding({
 					'system': 'http://snomed.info/sct',
 					'code': '109006'
 				})]
-			}),
+			})],
 			'detail': [new Reference({
 				'reference': 'Observation'
 			})]
 		});
 		condition.evidence = [evidence1];
 
-		condition.bodySite = new CodeableConcept({
-			'coding': [new Coding({
-				'system': 'http://snomed.info/sct',
-				'code': '106004'
-			})]
-		});
-		condition.notes = 'information about the condition';
+		condition.note = [new Annotation({
+			'authorReference': new Reference({
+				'reference': 'Patient'
+			}),
+			'time': '2016-09-09T17:11:02-04:00'
+		})];
 
 		const expected = {
 			'resourceType': 'Condition',
@@ -157,38 +163,40 @@ describe('Condition Resource Tests', () => {
 					'display': 'Acme Healthcare'
 				}
 			}],
-			'patient': {
-				'reference': 'Patient'
-			},
-			'encounter': {
-				'reference': 'Encounter'
-			},
-			'asserter': {
-				'reference': 'Practitioner'
-			},
-			'dateRecorded': '2001-05-06',
-			'code': {
-				'coding': [{
-					'system': 'http://snomed.info/sct',
-					'code': '109006'
-				}]
-			},
-			'category': {
+			'clinicalStatus': 'active',
+			'verificationStatus': 'provisional',
+			'category': [{
 				'coding': [{
 					'system': 'http://hl7.org/fhir/condition-category',
 					'code': 'complaint'
 				}]
-			},
-			'clinicalStatus': 'active',
-			'verificationStatus': 'provisional',
+			}],
 			'severity': {
 				'coding': [{
 					'system': 'http://snomed.info/sct',
 					'code': '399166001'
 				}]
 			},
+			'code': {
+				'coding': [{
+					'system': 'http://snomed.info/sct',
+					'code': '109006'
+				}]
+			},
+			'bodySite': [{
+				'coding': [{
+					'system': 'http://snomed.info/sct',
+					'code': '106004'
+				}]
+			}],
+			'subject': {
+				'reference': 'Patient'
+			},
+			'context': {
+				'reference': 'Encounter'
+			},
 			'onsetDateTime': '2017-07-08T15:57:49.482-04:00',
-			'onsetQuantity': '52',
+			'onsetAge': '52',
 			'onsetPeriod': {
 				'start': '2001-05-06'
 			},
@@ -198,7 +206,7 @@ describe('Condition Resource Tests', () => {
 			},
 			'onsetString': 'Some string',
 			'abatementDateTime': '2017-07-08T15:57:49.482-04:00',
-			'abatementQuantity': '52',
+			'abatementAge': '52',
 			'abatementBoolean': true,
 			'abatementPeriod': {
 				'start': '2001-05-06'
@@ -208,6 +216,10 @@ describe('Condition Resource Tests', () => {
 				'high': '10'
 			},
 			'abatementString': 'Some string',
+			'assertedDate': '2017-07-08T15:57:49.482-04:00',
+			'asserter': {
+				'reference': 'Practitioner'
+			},
 			'stage': {
 				'summary': {
 					'coding': [{
@@ -216,27 +228,26 @@ describe('Condition Resource Tests', () => {
 					}]
 				},
 				'assessment': [{
-				'reference': 'Observation'
+					'reference': 'Observation'
 				}],
 			},
 			'evidence': [{
-				'code': {
+				'code': [{
 					'coding': [{
 						'system': 'http://snomed.info/sct',
 						'code': '109006'
 					}]
-				},
+				}],
 				'detail': [{
-				'reference': 'Observation'
+					'reference': 'Observation'
 				}],
 			}],
-			'bodySite': [{
-				'coding': [{
-					'system': 'http://snomed.info/sct',
-					'code': '106004'
-				}]
-			}],
-			'notes': 'information about the condition'
+			'note': [{
+				'authorReference': {
+					'reference': 'Patient'
+				},
+				'time': '2016-09-09T17:11:02-04:00'
+			}]
 		};
 
 		expect(JSON.stringify(condition)).toEqual(JSON.stringify(expected));
