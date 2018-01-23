@@ -4,6 +4,7 @@ const Code = require('./types/Code');
 const Period = require('./types/Period');
 const Reference = require('./types/Reference');
 const CodeableConcept = require('./types/CodeableConcept');
+const Coding = require('./types/Coding');
 
 class StatusHistory {
 	constructor(obj) {
@@ -83,6 +84,80 @@ class Participant {
 	}
 }
 
+class ClassHistory {
+	constructor(obj) {
+		Object.assign(this, obj);
+	}
+
+	// classHistoryClass		1..1	Coding	inpatient | outpatient | ambulatory | emergency +
+	// ActEncounterCode (Extensible)
+	set classHistoryClass(classHistoryClass) {
+		this._classHistoryClass = new Coding(classHistoryClass);
+	}
+
+	get classHistoryClass() {
+		return this._classHistoryClass;
+	}
+
+	// period		1..1	Period	The time that the episode was in the specified class
+	set period(period) {
+		this._period = new Period(period);
+	}
+
+	get period() {
+		return this._period;
+	}
+
+	toJSON() {
+		return {
+			classHistoryClass: this._classHistoryClass,
+			period: this._period
+		};
+	}
+}
+
+class Diagnosis {
+	constructor(obj) {
+		Object.assign(this, obj);
+	}
+
+	// condition		1..1	Reference(Condition | Procedure)	Reason the encounter takes place (resource)
+	set condition(condition) {
+		this._condition = new Reference(condition);
+	}
+
+	get condition() {
+		return this._condition;
+	}
+
+	// role		0..1	CodeableConcept	Role that this diagnosis has within the encounter (e.g. admission, billing, discharge …)
+	// DiagnosisRole (Preferred)
+	set role(role) {
+		this._role = new CodeableConcept(role);
+	}
+
+	get role() {
+		return this._role;
+	}
+
+	// rank		0..1	positiveInt	Ranking of the diagnosis (for each role type)
+	set rank(rank) {
+		this._rank = rank;
+	}
+
+	get rank() {
+		return this._rank;
+	}
+
+	toJSON() {
+		return {
+			condition: this._condition,
+			role: this._role,
+			rank: this._rank
+		};
+	}
+}
+
 class Hospitalization {
 	constructor(obj) {
 		Object.assign(this, obj);
@@ -114,19 +189,6 @@ class Hospitalization {
 
 	get admitSource() {
 		return this._admitSource;
-	}
-
-	// admittingDiagnosis		0..*	 Reference(Condition)	The admitting diagnosis as reported by admitting practitioner
-	set admittingDiagnosis(admittingDiagnosis) {
-		if (Array.isArray(admittingDiagnosis)) {
-			this._admittingDiagnosis = admittingDiagnosis.map((i) => new Reference(i));
-		} else {
-			this._admittingDiagnosis = [new Reference(admittingDiagnosis)];
-		}
-	}
-
-	get admittingDiagnosis() {
-		return this._admittingDiagnosis;
 	}
 
 	// reAdmission		0..1 	CodeableConcept	The type of hospital re-admission that has occurred (if any).
@@ -200,34 +262,17 @@ class Hospitalization {
 		return this._dischargeDisposition;
 	}
 
-	// dischargeDiagnosis		0..* 	Reference(Condition)	The final diagnosis given a patient before release from the hospital after
-	// all testing, surgery, and workup are complete
-	set dischargeDiagnosis(dischargeDiagnosis) {
-		if (Array.isArray(dischargeDiagnosis)) {
-			this._dischargeDiagnosis = dischargeDiagnosis.map((i) => new Reference(i));
-		} else {
-			this._dischargeDiagnosis = [new Reference(dischargeDiagnosis)];
-		}
-	}
-
-	get dischargeDiagnosis() {
-		return this._dischargeDiagnosis;
-	}
-
-
 	toJSON() {
 		return {
 			preAdmissionIdentifier: this._preAdmissionIdentifier,
 			origin: this._origin,
 			admitSource: this._admitSource,
-			admittingDiagnosis: this._admittingDiagnosis,
 			reAdmission: this._reAdmission,
 			dietPreference: this._dietPreference,
 			specialCourtesy: this._specialCourtesy,
 			specialArrangement: this._specialArrangement,
 			destination: this._destination,
 			dischargeDisposition: this._dischargeDisposition,
-			dischargeDiagnosis: this._dischargeDiagnosis
 		};
 	}
 }
@@ -325,14 +370,27 @@ class Encounter	 extends DomainResource {
 		return this._statusHistory;
 	}
 
-	// encounterClass	Σ	0..1	 code	inpatient | outpatient | ambulatory | emergency +
-	// EncounterClass (Required)
+	// encounterClass	Σ	0..1	 Coding	inpatient | outpatient | ambulatory | emergency +
+	// EncounterClass (extensible)
 	set encounterClass(encounterClass) {
-		this._encounterClass = new Code(encounterClass);
+		this._encounterClass = new Coding(encounterClass);
 	}
 
 	get encounterClass() {
 		return this._encounterClass;
+	}
+
+	// classHistory		0..*	BackboneElement	List of past encounter classes
+	set classHistory(classHistory) {
+		if (Array.isArray(classHistory)) {
+			this._classHistory = classHistory.map((i) => new ClassHistory(i));
+		} else {
+			this._classHistory = [new ClassHistory(classHistory)];
+		}
+	}
+
+	get classHistory() {
+		return this._classHistory;
 	}
 
 	// type	Σ	0..*	 CodeableConcept	Specific type of encounter
@@ -359,13 +417,13 @@ class Encounter	 extends DomainResource {
 		return this._priority;
 	}
 
-	// patient	Σ	0..1	 Reference(Patient)	The patient present at the encounter
-	set patient(patient) {
-		this._patient = new Reference(patient);
+	// subject	Σ	0..1	Reference(Patient | Group)	The patient ro group present at the encounter
+	set subject(subject) {
+		this._subject = new Reference(subject);
 	}
 
-	get patient() {
-		return this._patient;
+	get subject() {
+		return this._subject;
 	}
 
 	// episodeOfCare	Σ	0..*	 Reference(EpisodeOfCare)	Episode(s) of care that this encounter should be recorded against
@@ -448,17 +506,30 @@ class Encounter	 extends DomainResource {
 		return this._reason;
 	}
 
-	// indication		0..*	 Reference(Condition | Procedure)	Reason the encounter takes place (resource)
-	set indication(indication) {
-		if (Array.isArray(indication)) {
-			this._indication = indication.map((i) => new Reference(i));
+	// diagnosis	Σ	0..*	BackboneElement	The list of diagnosis relevant to this encounter
+	set diagnosis(diagnosis) {
+		if (Array.isArray(diagnosis)) {
+			this._diagnosis = diagnosis.map((i) => new Diagnosis(i));
 		} else {
-			this._indication = [new Reference(indication)];
+			this._diagnosis = [new Diagnosis(diagnosis)];
 		}
 	}
 
-	get indication() {
-		return this._indication;
+	get diagnosis() {
+		return this._diagnosis;
+	}
+
+	// account		0..*	Reference(Account)	The set of accounts that may be used for billing for this Encounter
+	set account(account) {
+		if (Array.isArray(account)) {
+			this._account = account.map((i) => new Reference(i));
+		} else {
+			this._account = [new Reference(account)];
+		}
+	}
+
+	get account() {
+		return this._account;
 	}
 
 	// hospitalization		0..1	 BackboneElement	Details about the admission to a healthcare service
@@ -503,25 +574,27 @@ class Encounter	 extends DomainResource {
 
 	toJSON() {
 		const json = {
-				identifier: this._identifier,
-				status: this._status,
-				statusHistory: this._statusHistory,
-				encounterClass: this._encounterClass,
-				type: this._type,
-				priority: this._priority,
-				patient: this._patient,
-				episodeOfCare: this._episodeOfCare,
-				incomingReferral: this._incomingReferral,
-				participant: this._participant,
-				appointment: this._appointment,
-				period: this._period,
-				length: this._length,
-				reason: this._reason,
-				indication: this._indication,
-				hospitalization: this._hospitalization,
-				location: this._location,
-				serviceProvider: this._serviceProvider,
-				partOf: this._partOf
+			identifier: this._identifier,
+			status: this._status,
+			statusHistory: this._statusHistory,
+			encounterClass: this._encounterClass,
+			classHistory: this._classHistory,
+			type: this._type,
+			priority: this._priority,
+			subject: this._subject,
+			episodeOfCare: this._episodeOfCare,
+			incomingReferral: this._incomingReferral,
+			participant: this._participant,
+			appointment: this._appointment,
+			period: this._period,
+			length: this._length,
+			reason: this._reason,
+			diagnosis: this._diagnosis,
+			account: this._account,
+			hospitalization: this._hospitalization,
+			location: this._location,
+			serviceProvider: this._serviceProvider,
+			partOf: this._partOf
 		};
 
 		return Object.assign({ resourceType: this._resourceType }, super.toJSON(), json);
@@ -531,5 +604,7 @@ class Encounter	 extends DomainResource {
 module.exports.Encounter = Encounter;
 module.exports.StatusHistory = StatusHistory;
 module.exports.Participant = Participant;
+module.exports.ClassHistory = ClassHistory;
+module.exports.Diagnosis = Diagnosis;
 module.exports.Hospitalization = Hospitalization;
 module.exports.Location = Location;

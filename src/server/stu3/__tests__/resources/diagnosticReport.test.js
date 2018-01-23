@@ -4,9 +4,9 @@ const Metadata = require(path.resolve('./src/server/stu3/resources/types/Metadat
 const Identifier = require(path.resolve('./src/server/stu3/resources/types/Identifier'));
 const Period = require(path.resolve('./src/server/stu3/resources/types/Period'));
 const Reference = require(path.resolve('./src/server/stu3/resources/types/Reference'));
-const CodeableConcept = require(path.resolve('./src/server/dstu2/resources/types/CodeableConcept'));
-const Coding = require(path.resolve('./src/server/dstu2/resources/types/Coding'));
-const Attachment = require(path.resolve('./src/server/dstu2/resources/types/Attachment'));
+const CodeableConcept = require(path.resolve('./src/server/stu3/resources/types/CodeableConcept'));
+const Coding = require(path.resolve('./src/server/stu3/resources/types/Coding'));
+const Attachment = require(path.resolve('./src/server/stu3/resources/types/Attachment'));
 
 describe('DiagnosticReport Resource Tests', () => {
 	test('should create a DiagnosticReport Object default type', () => {

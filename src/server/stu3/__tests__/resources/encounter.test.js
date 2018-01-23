@@ -1,5 +1,5 @@
 const path = require('path');
-const { Encounter, StatusHistory, Participant, Hospitalization, Location } = require(path.resolve('./src/server/stu3/resources/Encounter'));
+const { Encounter, StatusHistory, ClassHistory, Participant, Diagnosis, Hospitalization, Location } = require(path.resolve('./src/server/stu3/resources/Encounter'));
 const Metadata = require(path.resolve('./src/server/stu3/resources/types/Metadata'));
 const Identifier = require(path.resolve('./src/server/stu3/resources/types/Identifier'));
 const Period = require(path.resolve('./src/server/stu3/resources/types/Period'));
@@ -54,8 +54,22 @@ describe('Encounter Resource Tests', () => {
 			})
 		});
 		encounter.statusHistory = [statusHistory1];
+		encounter.encounterClass = new Coding({
+			'system': 'http://hl7.org/fhir/v3/ActCode',
+			'code': 'AMB'
+		});
 
-		encounter.encounterClass = 'inpatient';
+		const classHistory1 = new ClassHistory({
+			'classHistoryClass': new Coding({
+				'system': 'http://hl7.org/fhir/v3/ActCode',
+				'code': 'AMB'
+			}),
+			'period': new Period({
+				'start': '2001-05-06'
+			})
+		});
+		encounter.classHistory = [classHistory1];
+
 		encounter.type = [new CodeableConcept({
 			'coding': [new Coding({
 				'system': 'http://hl7.org/fhir/encounter-type',
@@ -68,7 +82,7 @@ describe('Encounter Resource Tests', () => {
 				'code': 'imm'
 			})]
 		});
-		encounter.patient = new Reference({
+		encounter.subject = new Reference({
 			'reference': 'Patient'
 		});
 		encounter.episodeOfCare = [new Reference({
@@ -107,8 +121,22 @@ describe('Encounter Resource Tests', () => {
 				'code': '109006'
 			})]
 		})];
-		encounter.indication = [new Reference({
-			'reference': 'Condition'
+
+		const diagnosis1 = new Diagnosis({
+			'condition': new Reference({
+				'reference': 'Condition'
+			}),
+			'role': new CodeableConcept({
+				'coding': [new Coding({
+					'system': 'http://hl7.org/fhir/diagnosis-role',
+					'code': 'AD'
+				})]
+			}),
+			'rank': '12'
+		});
+		encounter.diagnosis = [diagnosis1];
+		encounter.account = [new Reference({
+			'reference': 'Account'
 		})];
 
 		const hospitalization1 = new Hospitalization({
@@ -138,9 +166,6 @@ describe('Encounter Resource Tests', () => {
 					'code': 'emd'
 				})]
 			}),
-			'admittingDiagnosis': [new Reference({
-				'reference': 'Condition'
-			})],
 			'reAdmission': new CodeableConcept({
 				'coding': [new Coding({
 					'system': 'Not Specified',
@@ -174,9 +199,6 @@ describe('Encounter Resource Tests', () => {
 					'code': 'home'
 				})]
 			}),
-			'dischargeDiagnosis': [new Reference({
-				'reference': 'Condition'
-			})]
 		});
 		encounter.hospitalization = hospitalization1;
 
@@ -229,7 +251,19 @@ describe('Encounter Resource Tests', () => {
 					'start': '2001-05-06'
 				}
 			}],
-			'encounterClass': 'inpatient',
+			'encounterClass': {
+				'system': 'http://hl7.org/fhir/v3/ActCode',
+				'code': 'AMB'
+			},
+			'classHistory': [{
+				'classHistoryClass': {
+					'system': 'http://hl7.org/fhir/v3/ActCode',
+					'code': 'AMB'
+				},
+				'period': {
+					'start': '2001-05-06'
+				}
+			}],
 			'type': [{
 				'coding': [{
 					'system': 'http://hl7.org/fhir/encounter-type',
@@ -242,7 +276,7 @@ describe('Encounter Resource Tests', () => {
 					'code': 'imm'
 				}]
 			},
-			'patient': {
+			'subject': {
 				'reference': 'Patient'
 			},
 			'episodeOfCare': [{
@@ -278,8 +312,20 @@ describe('Encounter Resource Tests', () => {
 					'code': '109006'
 				}]
 			}],
-			'indication': [{
-				'reference': 'Condition'
+			'diagnosis': [{
+				'condition': {
+					'reference': 'Condition'
+				},
+				'role': {
+					'coding': [{
+						'system': 'http://hl7.org/fhir/diagnosis-role',
+						'code': 'AD'
+					}]
+				},
+				'rank': '12'
+			}],
+			'account': [{
+				'reference': 'Account'
 			}],
 			'hospitalization': {
 				'preAdmissionIdentifier': {
@@ -308,9 +354,6 @@ describe('Encounter Resource Tests', () => {
 						'code': 'emd'
 					}]
 				},
-				'admittingDiagnosis': [{
-					'reference': 'Condition'
-				}],
 				'reAdmission': {
 					'coding': [{
 						'system': 'Not Specified',
@@ -344,9 +387,6 @@ describe('Encounter Resource Tests', () => {
 						'code': 'home'
 					}]
 				},
-				'dischargeDiagnosis': [{
-					'reference': 'Condition'
-				}],
 			},
 			'location': [{
 				'location': {
